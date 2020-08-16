@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Flex } from '@chakra-ui/core';
+import { Box, Flex, Image, Link } from '@chakra-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 
 type layoutProps = {
   children: React.ReactNode;
@@ -7,29 +8,32 @@ type layoutProps = {
 
 export default function Layout({ children }: layoutProps) {
   return (
-    <Flex
-      className='parent'
-      justifyContent='center'
-      margin='0 auto'
-      maxW='1200px'
-    >
+    <Box>
+      <Header />
       <Box>{children}</Box>
-    </Flex>
+    </Box>
   );
 }
 
 function Header() {
   return (
-    <Box h='50px' backgroundColor='blue.500'>
-      Top nav
-    </Box>
-  );
-}
-
-function Footer() {
-  return (
-    <Box h='50px' backgroundColor='red.500'>
-      Bottom nav
-    </Box>
+    <Flex justifyContent='space-between' backgroundColor='teal.500'>
+      <Flex className='left' marginLeft='15px' align='center'>
+        <Image
+          src='https://img.icons8.com/fluent/344/saving-book.png'
+          maxW='100px'
+          maxH='100px'
+          marginRight='100px'
+        />
+        <Link as={RouterLink} to='/categories' color='teal.100'>
+          Categories
+        </Link>
+      </Flex>
+      <Flex className='right' marginRight='15px' align='center'>
+        <Link as={RouterLink} color='teal.100' to='/login'>
+          {window.localStorage.getItem('token') ? 'Logout' : 'Login'}
+        </Link>
+      </Flex>
+    </Flex>
   );
 }

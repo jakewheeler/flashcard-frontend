@@ -1,31 +1,31 @@
 import React from 'react';
-import Home from './pages/Home';
+import Categories from './pages/Categories';
 import './App.css';
-import { ThemeProvider, CSSReset } from '@chakra-ui/core';
+import { ChakraProvider, CSSReset } from '@chakra-ui/core';
 import Layout from './components/Layout';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './pages/Login';
+import theme from '@chakra-ui/theme';
 
 function App() {
   return (
-    <ThemeProvider>
-      <CSSReset />
-      <Layout>
+    <>
+      <ChakraProvider theme={theme}>
+        <CSSReset />
         <Router>
-          <Link to='/'>Home</Link>
-          <Link to='/login'>Login</Link>
-
-          <Switch>
-            <Route exact path='/'>
-              <Home />
-            </Route>
-            <Route path='/login'>
-              <Login />
-            </Route>
-          </Switch>
+          <Layout>
+            <Switch>
+              <Route exact path='/categories'>
+                <Categories />
+              </Route>
+              <Route path='/login'>
+                <Login />
+              </Route>
+            </Switch>
+          </Layout>
         </Router>
-      </Layout>
-    </ThemeProvider>
+      </ChakraProvider>
+    </>
   );
 }
 
