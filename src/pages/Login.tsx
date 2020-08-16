@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   Text,
@@ -12,15 +12,25 @@ import { UserData } from '../types/user';
 import { fetchToken } from '../api/loginService';
 
 export default function Login() {
+  const [showLoginError, setShowLoginError] = useState<boolean>(false);
   const { handleSubmit, register, errors, formState } = useForm();
   const onSubmit = async (user: UserData) => {
-    window.localStorage.setItem('token', await fetchToken(user));
+    let token: string;
+    try {
+      token = await fetchToken(user);
+      window.localStorage.setItem('token', token);
+    } catch (err) {
+      setShowLoginError(true);
+    }
   };
   return (
     <Flex align='center' justifyContent='center'>
       <Flex h='100vh' w='100vw' align='center' justify='center'>
         <form onSubmit={handleSubmit<UserData>(onSubmit)}>
           <FormControl>
+            {showLoginError && (
+              <Text color='red.500'>Username and password are incorrect</Text>
+            )}
             <FormLabel htmlFor='username'>Username</FormLabel>
             <Input
               name='username'
