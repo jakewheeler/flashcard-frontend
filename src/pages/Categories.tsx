@@ -1,4 +1,3 @@
-import { Text } from '@chakra-ui/core';
 import React from 'react';
 import { useQuery } from 'react-query';
 import { getCategories } from '../api/cardService';

@@ -15,7 +15,7 @@ function App() {
         <Router>
           <Layout>
             <Switch>
-              <Route exact path='/categories'>
+              <Route path='/categories'>
                 <Categories />
               </Route>
               <Route path='/login'>

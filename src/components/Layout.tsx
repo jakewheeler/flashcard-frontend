@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Flex, Image, Link } from '@chakra-ui/core';
-import { Link as RouterLink } from 'react-router-dom';
-
+import { Link as RouterLink, useHistory } from 'react-router-dom';
 type layoutProps = {
   children: React.ReactNode;
 };
@@ -30,10 +29,27 @@ function Header() {
         </Link>
       </Flex>
       <Flex className='right' marginRight='15px' align='center'>
-        <Link as={RouterLink} color='teal.100' to='/login'>
-          {window.localStorage.getItem('token') ? 'Logout' : 'Login'}
-        </Link>
+        <Login />
       </Flex>
     </Flex>
+  );
+}
+
+function Login() {
+  return (
+    <Link as={RouterLink} to='/login'>
+      Login
+    </Link>
+  );
+}
+function Logout() {
+  const { push } = useHistory();
+  const deleteToken = () => {
+    push('/');
+  };
+  return (
+    <Link to='/' onClick={deleteToken}>
+      Logout
+    </Link>
   );
 }
