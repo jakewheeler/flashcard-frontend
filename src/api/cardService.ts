@@ -1,17 +1,19 @@
 import axios from 'axios';
 
-interface Category {
+export interface Category {
   id: number;
   name: string;
   userId: number;
 }
 
-export async function getCategories(): Promise<Category[]> {
-  const token = window.localStorage.getItem('token');
-  const categories = (
-    await axios.get<Category[]>('/categories', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-  ).data;
-  return categories;
+export async function getCategories(token: string): Promise<Category[]> {
+  const response = await axios.get<Category[]>('/categories', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
 }

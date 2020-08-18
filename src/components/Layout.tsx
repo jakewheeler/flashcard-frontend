@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Flex, Image, Link } from '@chakra-ui/core';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
+import useStore from '../utils/user';
 type layoutProps = {
   children: React.ReactNode;
 };
@@ -15,6 +16,7 @@ export default function Layout({ children }: layoutProps) {
 }
 
 function Header() {
+  const user = useStore((state) => state.user);
   return (
     <Flex justifyContent='space-between' backgroundColor='teal.500'>
       <Flex className='left' marginLeft='15px' align='center'>
@@ -29,7 +31,7 @@ function Header() {
         </Link>
       </Flex>
       <Flex className='right' marginRight='15px' align='center'>
-        <Login />
+        {user === '' ? <Login /> : <Logout />}
       </Flex>
     </Flex>
   );
@@ -43,8 +45,10 @@ function Login() {
   );
 }
 function Logout() {
+  const setUser = useStore((state) => state.setUser);
   const { push } = useHistory();
   const deleteToken = () => {
+    setUser('', '');
     push('/');
   };
   return (

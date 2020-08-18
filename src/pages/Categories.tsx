@@ -1,19 +1,23 @@
 import React from 'react';
 import { useQuery } from 'react-query';
-import { getCategories } from '../api/cardService';
+import { Category, getCategories } from '../api/cardService';
+import useStore from '../utils/user';
 
 function useCategories() {
-  return useQuery('/categories', getCategories);
+  const token = useStore((state) => state.token);
+  return useQuery<Category[], Error, '/categories'>('/categories', () =>
+    getCategories(token)
+  );
 }
 
 export default function Categories() {
-  const { isLoading, isError, data } = useCategories();
+  const { isLoading, error, isError, data } = useCategories();
   if (isLoading) {
     return <span>Loading...</span>;
   }
 
   if (isError) {
-    return <span>Error: no</span>;
+    return <span>Error: {error?.message}</span>;
   }
 
   // also status === 'success', but "else" logic works, too

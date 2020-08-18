@@ -11,8 +11,17 @@ import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
 import { fetchToken } from '../api/loginService';
+import useStore from '../utils/user';
+import jwtDecode from 'jwt-decode';
+
+interface JwtTokenPayload {
+  username: string;
+  iat: number;
+  exp: number;
+}
 
 export default function Login() {
+  const setUser = useStore((state) => state.setUser);
   const { push } = useHistory();
   const [showLoginError, setShowLoginError] = useState<boolean>(false);
   const { handleSubmit, register, errors, formState } = useForm();
@@ -20,7 +29,8 @@ export default function Login() {
     let token: string;
     try {
       token = await fetchToken(user);
-      window.localStorage.setItem('token', token);
+      let username = jwtDecode<JwtTokenPayload>(token).username;
+      setUser(username, token);
       push('/categories');
     } catch (err) {
       setShowLoginError(true);
@@ -57,7 +67,7 @@ export default function Login() {
           {errors.password && <Text color='red.500'>Password is required</Text>}
           <Button
             mt={4}
-            variantColor='teal'
+            colorScheme='teal'
             isLoading={formState.isSubmitting}
             type='submit'
           >
