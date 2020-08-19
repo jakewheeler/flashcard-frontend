@@ -1,29 +1,26 @@
 import React from 'react';
 import { useQuery } from 'react-query';
-import { Category, getCategories } from '../api/cardService';
+import { getCategories } from '../api/cardService';
 import useStore from '../utils/user';
 import { Box, Text, Flex, Link } from '@chakra-ui/core';
 import { Link as RouterLink } from 'react-router-dom';
 
 function useCategories() {
   const token = useStore((state) => state.token);
-  return useQuery<Category[], Error, '/categories'>('/categories', () =>
-    getCategories(token)
-  );
+  return useQuery(`${token}categories`, () => getCategories(token));
 }
 
 export default function Categories() {
   const { isLoading, error, isError, data } = useCategories();
 
   if (isError) {
-    return <span>Error: {error?.message}</span>;
+    return <span>Error: {(error as Error).message}</span>;
   }
 
   if (isLoading) {
     return <span>Loading...</span>;
   }
 
-  // also status === 'success', but "else" logic works, too
   return (
     <Flex justifyContent='space-between'>
       {data?.map((category) => (

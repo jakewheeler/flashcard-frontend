@@ -24,7 +24,7 @@ async function getDecks(token: string, id: string) {
 
 function useDecks(id: string) {
   const token = useStore((state) => state.token);
-  const key: string = `/categories/${id}/decks`;
+  const key: string = `${token}/categories/${id}/decks`;
   return useQuery(key, () => getDecks(token, id));
 }
 

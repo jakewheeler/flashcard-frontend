@@ -1,15 +1,41 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Categories from './pages/Categories';
 import './App.css';
 import { ChakraProvider, CSSReset } from '@chakra-ui/core';
 import Layout from './components/Layout';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Login from './pages/Login';
+import Login, { getDecodedJwt } from './pages/Login';
 import theme from '@chakra-ui/theme';
 import Decks from './pages/Decks';
 import Home from './pages/Home';
+import useStore from './utils/user';
+import { getCategories } from './api/cardService';
+
+// check if a stored user already exists and use that for the login
+export function useStoredUser() {
+  const { setUser, token, user } = useStore();
+  useEffect(() => {
+    const token = window.localStorage.getItem('token');
+    async function authCheck() {
+      if (token) {
+        try {
+          await getCategories(token);
+          let user = getDecodedJwt(token).username;
+          setUser(user, token);
+        } catch (err) {
+          console.error('Existing token is not valid');
+          setUser('', '');
+          window.localStorage.setItem('token', '');
+        }
+      }
+    }
+    authCheck();
+  }, [token, user, setUser]);
+}
 
 function App() {
+  useStoredUser();
+
   return (
     <>
       <ChakraProvider theme={theme}>

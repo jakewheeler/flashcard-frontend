@@ -20,6 +20,10 @@ interface JwtTokenPayload {
   exp: number;
 }
 
+export function getDecodedJwt(token: string) {
+  return jwtDecode<JwtTokenPayload>(token);
+}
+
 export default function Login() {
   const setUser = useStore((state) => state.setUser);
   const { push } = useHistory();
@@ -29,8 +33,9 @@ export default function Login() {
     let token: string;
     try {
       token = await fetchToken(user);
-      let username = jwtDecode<JwtTokenPayload>(token).username;
+      let username = getDecodedJwt(token).username;
       setUser(username, token);
+      window.localStorage.setItem('token', token);
       push('/categories');
     } catch (err) {
       setShowLoginError(true);

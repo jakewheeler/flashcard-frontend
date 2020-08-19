@@ -10,7 +10,9 @@ const useStore = create<UserValues>(
   (set): UserValues => ({
     user: '',
     token: '',
-    setUser: (user: string, token: string) => set({ user: user, token: token }),
+    setUser: (user: string, token: string) => {
+      set({ user: user, token: token });
+    },
   })
 );
 

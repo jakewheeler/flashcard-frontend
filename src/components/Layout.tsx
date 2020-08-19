@@ -28,9 +28,11 @@ function Header() {
             marginRight='100px'
           />
         </Link>
-        <Link as={RouterLink} to='/categories' color='teal.100'>
-          Categories
-        </Link>
+        {user ? (
+          <Link as={RouterLink} to='/categories' color='teal.100'>
+            Categories
+          </Link>
+        ) : null}
       </Flex>
       <Flex className='right' marginRight='15px' align='center'>
         {user === '' ? <Login /> : <Logout />}
@@ -51,6 +53,7 @@ function Logout() {
   const { push } = useHistory();
   const deleteToken = () => {
     setUser('', '');
+    window.localStorage.setItem('token', '');
     push('/');
   };
   return (

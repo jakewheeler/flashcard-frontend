@@ -8,7 +8,9 @@ export interface Category {
 
 export async function getCategories(token: string): Promise<Category[]> {
   const response = await axios.get<Category[]>('/categories', {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (response.status === 200) {
