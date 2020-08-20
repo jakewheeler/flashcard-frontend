@@ -4,6 +4,7 @@ import { useQuery } from 'react-query';
 import axios from 'axios';
 import { Flex, Box, Text } from '@chakra-ui/core';
 import { useParams } from 'react-router-dom';
+import Card, { ResponsiveCardParent } from '../components/Card';
 
 interface Deck {
   id: number;
@@ -46,13 +47,15 @@ function Decks() {
 
   // also status === 'success', but "else" logic works, too
   return (
-    <Flex justifyContent='space-between'>
+    <ResponsiveCardParent>
       {data?.map((deck) => (
-        <Box key={deck.id} bg='teal.600' width='100'>
-          <Text color='teal.200'>{deck.name}</Text>
-        </Box>
+        <Card
+          name={deck.name}
+          url={`/categories/${id}/decks/${deck.id}`}
+          key={deck.id}
+        />
       ))}
-    </Flex>
+    </ResponsiveCardParent>
   );
 }
 

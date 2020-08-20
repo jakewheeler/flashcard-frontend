@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Flex, Image, Link, Heading } from '@chakra-ui/core';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import useStore from '../utils/user';
+
 type layoutProps = {
   children: React.ReactNode;
 };
