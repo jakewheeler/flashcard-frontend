@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Image, Link } from '@chakra-ui/core';
+import { Box, Flex, Image, Link, Heading } from '@chakra-ui/core';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import useStore from '../utils/user';
 type layoutProps = {
@@ -8,7 +8,7 @@ type layoutProps = {
 
 export default function Layout({ children }: layoutProps) {
   return (
-    <Box>
+    <Box h='100vh' bgColor='teal.100'>
       <Header />
       <Box>{children}</Box>
     </Box>
@@ -20,14 +20,25 @@ function Header() {
   return (
     <Flex justifyContent='space-between' backgroundColor='teal.500'>
       <Flex className='left' marginLeft='15px' align='center'>
-        <Link as={RouterLink} to='/'>
+        <Flex
+          className='logo'
+          flexDir='row'
+          alignItems='center'
+          marginRight='100px'
+        >
+          {/* <Link as={RouterLink} to='/'> */}
           <Image
             src='https://img.icons8.com/fluent/344/saving-book.png'
-            maxW='100px'
-            maxH='100px'
-            marginRight='100px'
+            w='100px'
+            h='100px'
           />
-        </Link>
+          <Heading size='md' color='teal.100' marginLeft='5px'>
+            Flashy Cards
+          </Heading>
+
+          {/* </Link> */}
+        </Flex>
+
         {user ? (
           <Link as={RouterLink} to='/categories' color='teal.100'>
             Categories
@@ -43,7 +54,7 @@ function Header() {
 
 function Login() {
   return (
-    <Link as={RouterLink} to='/login'>
+    <Link as={RouterLink} to='/login' color='teal.100'>
       Login
     </Link>
   );
@@ -57,7 +68,7 @@ function Logout() {
     push('/');
   };
   return (
-    <Link to='/' onClick={deleteToken}>
+    <Link to='/' onClick={deleteToken} color='teal.100'>
       Logout
     </Link>
   );
