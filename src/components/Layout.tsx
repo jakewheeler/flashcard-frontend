@@ -21,25 +21,23 @@ function Header() {
   return (
     <Flex justifyContent='space-between' backgroundColor='teal.500'>
       <Flex className='left' marginLeft='15px' align='center'>
-        <Flex
-          className='logo'
-          flexDir='row'
-          alignItems='center'
-          marginRight='100px'
-        >
-          {/* <Link as={RouterLink} to='/'> */}
-          <Image
-            src='https://img.icons8.com/fluent/344/saving-book.png'
-            w='100px'
-            h='100px'
-          />
-          <Heading size='md' color='teal.100' marginLeft='5px'>
-            Flashy Cards
-          </Heading>
-
-          {/* </Link> */}
-        </Flex>
-
+        <Link as={RouterLink} to='/' style={{ textDecoration: 'none' }}>
+          <Flex
+            className='logo'
+            flexDir='row'
+            alignItems='center'
+            marginRight='100px'
+          >
+            <Image
+              src='https://img.icons8.com/fluent/344/saving-book.png'
+              w='100px'
+              h='100px'
+            />
+            <Heading size='md' color='teal.100' marginLeft='5px'>
+              Flashy Cards
+            </Heading>
+          </Flex>
+        </Link>
         {user ? (
           <Link as={RouterLink} to='/categories' color='teal.100'>
             Categories
