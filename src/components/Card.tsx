@@ -10,11 +10,11 @@ type CardProps = {
 export default function Card({ name, url }: CardProps) {
   return (
     <Link
+      className='card'
       as={RouterLink}
       to={url}
       textDecor='none'
       padding='20px'
-      flexGrow='inherit'
     >
       <Flex
         minW='300px'
@@ -25,6 +25,7 @@ export default function Card({ name, url }: CardProps) {
         bg='teal.600'
         alignItems='center'
         justifyContent='center'
+        margin='50px'
         _hover={{
           borderColor: 'black',
           bg: 'teal.500',
@@ -47,7 +48,7 @@ export function ResponsiveCardParent({ children }: ResponsiveCardParentProps) {
   return (
     <Flex
       //   flexDir={['column', 'column', 'column', 'row']}
-      justifyContent='space-between'
+      justifyContent={['center', 'center', 'left', 'left']}
       padding='20px'
       flexWrap='wrap'
     >

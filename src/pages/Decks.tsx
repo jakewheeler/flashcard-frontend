@@ -2,7 +2,6 @@ import React from 'react';
 import useStore from '../utils/user';
 import { useQuery } from 'react-query';
 import axios from 'axios';
-import { Flex, Box, Text } from '@chakra-ui/core';
 import { useParams } from 'react-router-dom';
 import Card, { ResponsiveCardParent } from '../components/Card';
 

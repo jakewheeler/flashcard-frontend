@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { getCategories } from '../api/cardService';
 import useStore from '../utils/user';
-import { Box } from '@chakra-ui/core';
+import { Box, Flex } from '@chakra-ui/core';
 import Card, { ResponsiveCardParent } from '../components/Card';
 
 function useCategories() {
@@ -22,12 +22,17 @@ export default function Categories() {
   }
 
   return (
-    <ResponsiveCardParent>
-      {data?.map((category) => (
-        <Box key={category.id}>
-          <Card name={category.name} url={`/categories/${category.id}/decks`} />
-        </Box>
-      ))}
-    </ResponsiveCardParent>
+    <Flex justifyContent='center'>
+      <ResponsiveCardParent>
+        {data?.map((category) => (
+          <Box key={category.id}>
+            <Card
+              name={category.name}
+              url={`/categories/${category.id}/decks`}
+            />
+          </Box>
+        ))}
+      </ResponsiveCardParent>
+    </Flex>
   );
 }

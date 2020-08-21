@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import useStore from './utils/user';
 import { getCategories } from './api/cardService';
 
+
 // check if a stored user already exists and use that for the login
 export function useStoredUser() {
   const { setUser, token, user } = useStore();

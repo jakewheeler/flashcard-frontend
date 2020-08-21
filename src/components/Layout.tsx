@@ -9,9 +9,9 @@ type layoutProps = {
 
 export default function Layout({ children }: layoutProps) {
   return (
-    <Box h='100vh' bgColor='teal.100'>
+    <Box minH='100vh' bg='teal.300'>
       <Header />
-      <Box>{children}</Box>
+      <Flex justifyContent='center'>{children}</Flex>
     </Box>
   );
 }
