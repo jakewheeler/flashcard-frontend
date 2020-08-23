@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from 'react-query';
 import { getCategories } from '../api/cardService';
 import useStore from '../utils/user';
-import { Box, Flex } from '@chakra-ui/core';
+import { Box } from '@chakra-ui/core';
 import Card, { ResponsiveCardLayout } from '../components/Card';
 
 function useCategories() {
