@@ -22,12 +22,7 @@ function Header() {
     <Flex justifyContent='space-between' backgroundColor='teal.500'>
       <Flex className='left' marginLeft='15px' align='center'>
         <Link as={RouterLink} to='/' style={{ textDecoration: 'none' }}>
-          <Flex
-            className='logo'
-            flexDir='row'
-            alignItems='center'
-            marginRight='100px'
-          >
+          <Flex className='logo' flexDir='row' alignItems='center'>
             <Image
               src='https://img.icons8.com/fluent/344/saving-book.png'
               w='100px'
@@ -38,11 +33,13 @@ function Header() {
             </Heading>
           </Flex>
         </Link>
-        {user ? (
-          <Link as={RouterLink} to='/categories' color='teal.100'>
-            Categories
-          </Link>
-        ) : null}
+        <Box marginLeft='100px'>
+          {user ? (
+            <Link as={RouterLink} to='/categories' color='teal.100'>
+              Categories
+            </Link>
+          ) : null}
+        </Box>
       </Flex>
       <Flex className='right' marginRight='15px' align='center'>
         {user === '' ? <Login /> : <Logout />}

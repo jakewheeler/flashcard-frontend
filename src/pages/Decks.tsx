@@ -3,7 +3,7 @@ import useStore from '../utils/user';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import Card, { ResponsiveCardParent } from '../components/Card';
+import Card, { ResponsiveCardLayout } from '../components/Card';
 
 interface Deck {
   id: number;
@@ -44,9 +44,8 @@ function Decks() {
     return <span>Loading...</span>;
   }
 
-  // also status === 'success', but "else" logic works, too
   return (
-    <ResponsiveCardParent>
+    <ResponsiveCardLayout>
       {data?.map((deck) => (
         <Card
           name={deck.name}
@@ -54,7 +53,7 @@ function Decks() {
           key={deck.id}
         />
       ))}
-    </ResponsiveCardParent>
+    </ResponsiveCardLayout>
   );
 }
 

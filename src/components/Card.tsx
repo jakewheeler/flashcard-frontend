@@ -44,11 +44,11 @@ export default function Card({ name, url }: CardProps) {
   );
 }
 
-type ResponsiveCardParentProps = {
+type ResponsiveCardLayoutProps = {
   children: React.ReactNode;
 };
 
-export function ResponsiveCardParent({ children }: ResponsiveCardParentProps) {
+export function ResponsiveCardLayout({ children }: ResponsiveCardLayoutProps) {
   return (
     <Flex
       justifyContent={['center', 'center', 'left', 'left']}

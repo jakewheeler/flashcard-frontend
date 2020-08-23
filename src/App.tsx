@@ -8,9 +8,9 @@ import Login, { getDecodedJwt } from './pages/Login';
 import theme from '@chakra-ui/theme';
 import Decks from './pages/Decks';
 import Home from './pages/Home';
+import Cards from './pages/Cards';
 import useStore from './utils/user';
 import { getCategories } from './api/cardService';
-
 
 // check if a stored user already exists and use that for the login
 export function useStoredUser() {
@@ -48,6 +48,7 @@ function App() {
               <Route path='/login' component={Login} />
               <Route exact path='/categories' component={Categories} />
               <Route exact path='/categories/:id/decks' component={Decks} />
+              <Route exact path='/categories/:categoryId/decks/:deckId' component={Cards}/>
             </Switch>
           </Layout>
         </Router>
