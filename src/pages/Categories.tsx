@@ -22,17 +22,12 @@ export default function Categories() {
   }
 
   return (
-    <Flex justifyContent='center'>
-      <ResponsiveCardLayout>
-        {data?.map((category) => (
-          <Box key={category.id}>
-            <Card
-              name={category.name}
-              url={`/categories/${category.id}/decks`}
-            />
-          </Box>
-        ))}
-      </ResponsiveCardLayout>
-    </Flex>
+    <ResponsiveCardLayout>
+      {data?.map((category) => (
+        <Box key={category.id}>
+          <Card name={category.name} url={`/categories/${category.id}/decks`} />
+        </Box>
+      ))}
+    </ResponsiveCardLayout>
   );
 }

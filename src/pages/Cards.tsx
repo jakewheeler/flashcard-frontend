@@ -55,7 +55,7 @@ function Cards() {
       {data?.map((card) => (
         <Card
           name={card.front}
-          url={`/categories/${categoryId}/decks/${deckId}/cards`}
+          url={`/categories/${categoryId}/decks/${deckId}/cards/${card.id}`}
           key={card.id}
         />
       ))}
