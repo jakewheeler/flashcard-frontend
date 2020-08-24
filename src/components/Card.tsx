@@ -1,21 +1,14 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import {
-  Flex,
-  Text,
-  IconButton,
-  Icon,
-  Stack,
-  HStack,
-  Box,
-} from '@chakra-ui/core';
+import { Flex, Text, IconButton, Stack, HStack, Box } from '@chakra-ui/core';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 
 type CardProps = {
-  name: string;
+  children: string;
   url: string;
 };
 
-export default function Card({ name, url }: CardProps) {
+export default function Card({ children, url }: CardProps) {
   return (
     <Stack
       borderWidth='1px'
@@ -33,12 +26,14 @@ export default function Card({ name, url }: CardProps) {
         <HStack spacing='5px' mr='5px' mt='5px'>
           <IconButton
             aria-label='Edit'
-            icon={<Icon />}
-            onClick={() => console.log('edit')}
+            colorScheme='teal'
+            icon={<EditIcon />}
+            onClick={() => console.log('edit', url)}
           />
           <IconButton
             aria-label='Delete'
-            icon={<Icon />}
+            colorScheme='teal'
+            icon={<DeleteIcon />}
             onClick={() => console.log('delete')}
           />
         </HStack>
@@ -51,7 +46,7 @@ export default function Card({ name, url }: CardProps) {
             maxW='300px'
             padding='20px'
           >
-            {name}
+            {children}
           </Text>
         </Flex>
       </Box>

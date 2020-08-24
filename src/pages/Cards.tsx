@@ -54,10 +54,11 @@ function Cards() {
     <ResponsiveCardLayout>
       {data?.map((card) => (
         <Card
-          name={card.front}
           url={`/categories/${categoryId}/decks/${deckId}/cards/${card.id}`}
           key={card.id}
-        />
+        >
+          {card.front}
+        </Card>
       ))}
     </ResponsiveCardLayout>
   );

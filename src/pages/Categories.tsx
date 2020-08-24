@@ -25,7 +25,7 @@ export default function Categories() {
     <ResponsiveCardLayout>
       {data?.map((category) => (
         <Box key={category.id}>
-          <Card name={category.name} url={`/categories/${category.id}/decks`} />
+          <Card url={`/categories/${category.id}/decks`}>{category.name}</Card>
         </Box>
       ))}
     </ResponsiveCardLayout>

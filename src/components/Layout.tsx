@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Image, Link, Heading } from '@chakra-ui/core';
+import { Box, Flex, Image, Link, Heading, HStack } from '@chakra-ui/core';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import useStore from '../utils/user';
 
@@ -33,13 +33,16 @@ function Header() {
             </Heading>
           </Flex>
         </Link>
-        <Box marginLeft='100px'>
+        <HStack marginLeft='100px' spacing='35px' mr={['50px']}>
+          <Link as={RouterLink} to='/' color='teal.100'>
+            Home
+          </Link>
           {user ? (
             <Link as={RouterLink} to='/categories' color='teal.100'>
               My Library
             </Link>
           ) : null}
-        </Box>
+        </HStack>
       </Flex>
       <Flex className='right' marginRight='15px' align='center'>
         {user === '' ? <Login /> : <Logout />}

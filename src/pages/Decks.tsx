@@ -47,11 +47,9 @@ function Decks() {
   return (
     <ResponsiveCardLayout>
       {data?.map((deck) => (
-        <Card
-          name={deck.name}
-          url={`/categories/${id}/decks/${deck.id}`}
-          key={deck.id}
-        />
+        <Card url={`/categories/${id}/decks/${deck.id}`} key={deck.id}>
+          {deck.name}
+        </Card>
       ))}
     </ResponsiveCardLayout>
   );

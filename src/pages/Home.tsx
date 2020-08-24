@@ -1,6 +1,13 @@
 import React from 'react';
-import { Text } from '@chakra-ui/core';
+import { Text, VStack, HStack, Heading } from '@chakra-ui/core';
 
 export default function Home() {
-  return <Text>This is the home page</Text>;
+  return (
+    <VStack spacing='50px' mt='50px'>
+      <Heading size='2xl' color='teal.900'>
+        Welcome to Flashy Cards
+      </Heading>
+      <HStack></HStack>
+    </VStack>
+  );
 }
