@@ -28,7 +28,7 @@ function Header() {
               w='100px'
               h='100px'
             />
-            <Heading size='md' color='teal.100' marginLeft='5px'>
+            <Heading size='md' color='teal.100' marginLeft='8px'>
               Flashy Cards
             </Heading>
           </Flex>
@@ -36,7 +36,7 @@ function Header() {
         <Box marginLeft='100px'>
           {user ? (
             <Link as={RouterLink} to='/categories' color='teal.100'>
-              Categories
+              My Library
             </Link>
           ) : null}
         </Box>
