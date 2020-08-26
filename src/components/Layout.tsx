@@ -11,7 +11,7 @@ export default function Layout({ children }: layoutProps) {
   return (
     <Box minH='100vh' bg='teal.300'>
       <Header />
-      <Flex justifyContent='center'>{children}</Flex>
+      <Flex justifyContent='left'>{children}</Flex>
     </Box>
   );
 }

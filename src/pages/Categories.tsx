@@ -38,7 +38,7 @@ export default function Categories() {
   }
 
   return (
-    <Flex>
+    <Flex className='lib-container'>
       <MenuSection />
       <ResponsiveCardLayout>
         {data?.map((category) => (
