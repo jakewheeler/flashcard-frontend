@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from 'react-query';
 import { getCategories, Category } from '../api/cardService';
 import useStore from '../utils/user';
@@ -27,15 +27,7 @@ function useCategories() {
 }
 
 export default function Categories() {
-  const { isLoading, error, isError, data } = useCategories();
-
-  if (isError) {
-    return <span>Error: {(error as Error).message}</span>;
-  }
-
-  if (isLoading) {
-    return <span>Loading...</span>;
-  }
+  const [selectedDeck, setSelectedDeck] = useState<string>();
 
   return (
     <Flex className='lib-container'>
@@ -44,19 +36,20 @@ export default function Categories() {
 
       {/* shows cards in a specific deck */}
       <ResponsiveCardLayout>
-        {data?.map((category) => (
+        {/* {data?.map((category) => (
           <Box key={category.id}>
             <Card url={`/categories/${category.id}/decks`}>
               {category.name}
             </Card>
           </Box>
-        ))}
+        ))} */}
       </ResponsiveCardLayout>
     </Flex>
   );
 }
 
 function MenuSection() {
+  const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
   const { isLoading, error, isError, data } = useCategories();
 
   if (isError) {
@@ -77,7 +70,11 @@ function MenuSection() {
         <Text align='left' color='teal.100'>
           View by{' '}
         </Text>
-        <RadioGroup defaultValue='category'>
+        <RadioGroup
+          defaultValue='category'
+          onChange={setViewByValue}
+          value={viewByValue}
+        >
           <HStack spacing={5}>
             <Radio colorScheme='white' value='category'>
               Category
