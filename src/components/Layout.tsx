@@ -3,11 +3,11 @@ import { Box, Flex, Image, Link, Heading, HStack } from '@chakra-ui/core';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import useStore from '../utils/user';
 
-type layoutProps = {
+type LayoutProps = {
   children: React.ReactNode;
 };
 
-export default function Layout({ children }: layoutProps) {
+export default function Layout({ children }: LayoutProps) {
   return (
     <Box minH='100vh' bg='teal.300'>
       <Header />

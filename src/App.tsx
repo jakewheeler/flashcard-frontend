@@ -48,7 +48,11 @@ function App() {
               <Route path='/login' component={Login} />
               <Route exact path='/categories' component={Categories} />
               <Route exact path='/categories/:id/decks' component={Decks} />
-              <Route exact path='/categories/:categoryId/decks/:deckId' component={Cards}/>
+              <Route
+                exact
+                path='/categories/:categoryId/decks/:deckId'
+                component={Cards}
+              />
             </Switch>
           </Layout>
         </Router>

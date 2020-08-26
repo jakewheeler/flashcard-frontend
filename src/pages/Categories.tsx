@@ -39,7 +39,10 @@ export default function Categories() {
 
   return (
     <Flex className='lib-container'>
+      {/* left side menu */}
       <MenuSection />
+
+      {/* shows cards in a specific deck */}
       <ResponsiveCardLayout>
         {data?.map((category) => (
           <Box key={category.id}>
@@ -177,7 +180,7 @@ function RadioCardGroup({ decks }: RadioCardGroupProps) {
         const radio = getRadioProps({ value });
         return (
           <RadioCard key={value} {...radio}>
-            {value}
+            <Text isTruncated>{value}</Text>
           </RadioCard>
         );
       })}
