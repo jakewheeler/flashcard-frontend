@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import Card, { ResponsiveCardLayout } from '../components/Card';
 
-interface Deck {
+export interface Deck {
   id: number;
   name: string;
 }
@@ -22,7 +22,7 @@ async function getDecks(token: string, id: string) {
   throw new Error(response.statusText);
 }
 
-function useDecks(id: string) {
+export function useDecks(id: string) {
   const token = useStore((state) => state.token);
   const key: string = `${token}/categories/${id}/decks`;
   return useQuery(key, () => getDecks(token, id));

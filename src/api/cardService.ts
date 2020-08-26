@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export interface Category {
-  id: number;
+  id: string;
   name: string;
   userId: number;
 }

@@ -14,8 +14,12 @@ import {
   HStack,
   Button,
   Collapse,
+  useRadio,
+  UseRadioProps,
+  useRadioGroup,
 } from '@chakra-ui/core';
 import Card, { ResponsiveCardLayout } from '../components/Card';
+import { useDecks, Deck } from '../pages/Decks';
 
 function useCategories() {
   const token = useStore((state) => state.token);
@@ -61,8 +65,8 @@ function MenuSection() {
   }
 
   return (
-    <Box minH='100vh' minW='300px' maxW='300px' bgColor='teal.400'>
-      <Heading align='center' mt='35px' color='teal.100' mb='5px'>
+    <Box minH='100vh' minW='500px' maxW='500px' bgColor='teal.400'>
+      <Heading align='center' mt='35px' color='teal.100' mb='10px'>
         Library
       </Heading>
       <Divider />
@@ -70,12 +74,12 @@ function MenuSection() {
         <Text align='left' color='teal.100'>
           View by{' '}
         </Text>
-        <RadioGroup defaultValue='1'>
+        <RadioGroup defaultValue='category'>
           <HStack spacing={5}>
-            <Radio colorScheme='teal' value='1'>
+            <Radio colorScheme='white' value='category'>
               Category
             </Radio>
-            <Radio colorScheme='teal' value='2'>
+            <Radio colorScheme='white' value='deck'>
               Deck
             </Radio>
           </HStack>
@@ -91,9 +95,18 @@ function MenuSection() {
 }
 
 function CollapsibleCategory({ category }: { category: Category }) {
+  const { isLoading, error, isError, data } = useDecks(category.id);
   const [show, setShow] = React.useState<boolean>(false);
 
   const handleToggle = () => setShow(!show);
+
+  if (isError) {
+    return <span>Error: {(error as Error).message}</span>;
+  }
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
 
   return (
     <>
@@ -101,8 +114,73 @@ function CollapsibleCategory({ category }: { category: Category }) {
         <Text isTruncated> {category.name}</Text>
       </Button>
       <Collapse mt={4} isOpen={show}>
-        {category.id}
+        <RadioCardGroup decks={data!} />
       </Collapse>
     </>
+  );
+}
+
+interface CustomRadioBtnProps extends UseRadioProps {
+  children: React.ReactNode;
+}
+
+function RadioCard(props: CustomRadioBtnProps) {
+  const { getInputProps, getCheckboxProps } = useRadio(props);
+
+  const input = getInputProps();
+  const checkbox = getCheckboxProps();
+
+  return (
+    <Box as='label'>
+      <input {...input} />
+      <Box
+        {...checkbox}
+        cursor='pointer'
+        borderWidth='1px'
+        borderRadius='md'
+        boxShadow='md'
+        _checked={{
+          bg: 'teal.600',
+          color: 'white',
+          borderColor: 'teal.600',
+        }}
+        _focus={{
+          boxShadow: 'outline',
+        }}
+        px={5}
+        py={3}
+      >
+        {props.children}
+      </Box>
+    </Box>
+  );
+}
+
+type RadioCardGroupProps = {
+  decks: Deck[];
+};
+
+function RadioCardGroup({ decks }: RadioCardGroupProps) {
+  const options = decks.map((deck) => deck.name);
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: 'decks',
+    defaultValue: 'react',
+    onChange: console.log,
+  });
+
+  const group = getRootProps();
+
+  return (
+    <VStack {...group} align='left' ml={10}>
+      {options.map((value) => {
+        const radio = getRadioProps({ value });
+        return (
+          <RadioCard key={value} {...radio}>
+            {value}
+          </RadioCard>
+        );
+      })}
+    </VStack>
   );
 }
