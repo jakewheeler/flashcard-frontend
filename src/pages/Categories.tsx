@@ -17,48 +17,72 @@ import {
   useRadio,
   UseRadioProps,
   useRadioGroup,
+  Spinner,
 } from '@chakra-ui/core';
 import Card, { ResponsiveCardLayout } from '../components/Card';
-import { useDecks, Deck } from '../pages/Decks';
+import { useDecks, useAllUserDecks, Deck, getCards } from '../pages/Decks';
+import useSelectedDeck from '../utils/deck';
 
 function useCategories() {
   const token = useStore((state) => state.token);
   return useQuery(`${token}categories`, () => getCategories(token));
 }
 
+function useCards(deck: Deck) {
+  const token = useStore((state) => state.token);
+  return useQuery(
+    `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`,
+    () => getCards(token, deck)
+  );
+}
+
 export default function Categories() {
-  const [selectedDeck, setSelectedDeck] = useState<string>();
+  const selectedDeck = useSelectedDeck((state) => state.currentDeck);
 
   return (
     <Flex className='lib-container'>
       {/* left side menu */}
       <MenuSection />
-
       {/* shows cards in a specific deck */}
       <ResponsiveCardLayout>
-        {/* {data?.map((category) => (
-          <Box key={category.id}>
-            <Card url={`/categories/${category.id}/decks`}>
-              {category.name}
-            </Card>
-          </Box>
-        ))} */}
+        {!selectedDeck ? (
+          <Text>Select a deck</Text>
+        ) : (
+          <CardPanel deck={selectedDeck} />
+        )}
       </ResponsiveCardLayout>
     </Flex>
   );
 }
 
-function MenuSection() {
-  const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
-  const { isLoading, error, isError, data } = useCategories();
+function CardPanel({ deck }: { deck: Deck }) {
+  const { isLoading, error, isError, data } = useCards(deck);
 
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
   }
 
   if (isLoading) {
-    return <span>Loading...</span>;
+    return <Spinner color='white' />;
   }
+
+  if (!isLoading && !isError && data && data.length < 1) {
+    return <Text color='teal.900'>No cards yet</Text>;
+  }
+
+  return (
+    <>
+      {data?.map((card) => (
+        <Box key={card.id}>
+          <Card url={``}>{card.front}</Card>
+        </Box>
+      ))}
+    </>
+  );
+}
+
+function MenuSection() {
+  const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
 
   return (
     <Box minH='100vh' minW='500px' maxW='500px' bgColor='teal.400'>
@@ -86,11 +110,46 @@ function MenuSection() {
         </RadioGroup>
       </VStack>
       <VStack align='left' paddingTop={5} mr={5} ml={5}>
-        {data?.map((category) => (
-          <CollapsibleCategory key={category.id} category={category} />
-        ))}
+        {viewByValue === 'category' ? <CategoryDisplay /> : <DeckDisplay />}
       </VStack>
     </Box>
+  );
+}
+
+function CategoryDisplay() {
+  const { isLoading, error, isError, data } = useCategories();
+
+  if (isError) {
+    return <span>Error: {(error as Error).message}</span>;
+  }
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  return (
+    <>
+      {data?.map((category) => (
+        <CollapsibleCategory key={category.id} category={category} />
+      ))}
+    </>
+  );
+}
+
+function DeckDisplay() {
+  const { isLoading, error, isError, data } = useAllUserDecks();
+  if (isError) {
+    return <span>Error: {(error as Error).message}</span>;
+  }
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  return (
+    <>
+      <RadioCardGroup decks={data!} />
+    </>
   );
 }
 
@@ -105,7 +164,7 @@ function CollapsibleCategory({ category }: { category: Category }) {
   }
 
   if (isLoading) {
-    return <span>Loading...</span>;
+    return <Spinner color='white' />;
   }
 
   return (
@@ -114,7 +173,9 @@ function CollapsibleCategory({ category }: { category: Category }) {
         <Text isTruncated> {category.name}</Text>
       </Button>
       <Collapse mt={4} isOpen={show}>
-        <RadioCardGroup decks={data!} />
+        <Box ml={10}>
+          <RadioCardGroup decks={data!} />
+        </Box>
       </Collapse>
     </>
   );
@@ -161,19 +222,21 @@ type RadioCardGroupProps = {
 };
 
 function RadioCardGroup({ decks }: RadioCardGroupProps) {
-  const options = decks.map((deck) => deck.name);
+  const setSelectedDeck = useSelectedDeck((state) => state.setDeck);
+  const deckNameOptions = decks.map((deck) => deck.name);
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: 'decks',
     defaultValue: 'react',
-    onChange: console.log,
+    onChange: (selectedDeck) =>
+      setSelectedDeck(decks.find((d) => d.name === selectedDeck)!),
   });
 
   const group = getRootProps();
 
   return (
-    <VStack {...group} align='left' ml={10}>
-      {options.map((value) => {
+    <VStack {...group} align='left'>
+      {deckNameOptions.map((value) => {
         const radio = getRadioProps({ value });
         return (
           <RadioCard key={value} {...radio}>
