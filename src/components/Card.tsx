@@ -60,7 +60,7 @@ type CardStructureProps = {
   card: Card;
 };
 
-function CardStructure({ children, card }: CardStructureProps) {
+export function CardStructure({ children, card }: CardStructureProps) {
   const deck = useSelectedDeck((state) => state.currentDeck);
   if (!deck) return <Box className='no-deck-cards'></Box>;
 
@@ -74,7 +74,7 @@ function CardStructure({ children, card }: CardStructureProps) {
       rounded='lg'
       overflow='hidden'
       bg='teal.600'
-      margin='50px'
+      // margin='50px'
       _hover={{
         borderColor: 'black',
         bg: 'teal.500',

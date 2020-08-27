@@ -37,7 +37,7 @@ export default function Login() {
       let username = getDecodedJwt(token).username;
       setUser(username, token);
       window.localStorage.setItem('token', token);
-      push('/categories');
+      push('/library');
     } catch (err) {
       setShowLoginError(true);
     }
