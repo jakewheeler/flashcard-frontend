@@ -7,7 +7,7 @@ import {
 } from '../api/card-service';
 import useStore from '../stores/user';
 import { Deck } from '../types/card';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { getDecodedJwt } from '../utils';
 
 export function useAllUserDecks() {

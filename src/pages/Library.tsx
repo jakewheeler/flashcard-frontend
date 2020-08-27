@@ -36,21 +36,23 @@ export default function Library() {
       {/* left side menu */}
       <MenuSection />
       <Flex flexDir='column'>
-        {selectedDeck && (
-          <Heading color='teal.900' ml={55} mt={5}>
-            {selectedDeck.name}
-          </Heading>
-        )}
+        <Heading color='teal.900' ml={55} mt={5}>
+          {selectedDeck ? selectedDeck.name : 'Select a deck'}
+        </Heading>
         {/* shows cards in a specific deck */}
         <ResponsiveCardLayout>
-          {selectedDeck && <CardPanel deck={selectedDeck} />}
+          {selectedDeck && <CardView deck={selectedDeck} />}
         </ResponsiveCardLayout>
       </Flex>
     </Flex>
   );
 }
 
-function CardPanel({ deck }: { deck: Deck }) {
+type CardPanelProps = {
+  deck: Deck;
+};
+
+function CardView({ deck }: CardPanelProps) {
   const { isLoading, error, isError, data } = useCards(deck);
 
   if (isError) {
@@ -101,13 +103,13 @@ function MenuSection() {
         </RadioGroup>
       </VStack>
       <VStack align='left' paddingTop={5} mr={5} ml={5}>
-        {viewByValue === 'category' ? <CategoryDisplay /> : <DeckDisplay />}
+        {viewByValue === 'category' ? <ViewByCategory /> : <ViewByDeck />}
       </VStack>
     </Box>
   );
 }
 
-function CategoryDisplay() {
+function ViewByCategory() {
   const { isLoading, error, isError, data } = useCategories();
 
   if (isError) {
@@ -127,7 +129,7 @@ function CategoryDisplay() {
   );
 }
 
-function DeckDisplay() {
+function ViewByDeck() {
   const { isLoading, error, isError, data } = useAllUserDecks();
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
@@ -144,6 +146,7 @@ function DeckDisplay() {
   );
 }
 
+// Category that will display the deck radio button group under it
 function CollapsibleCategory({ category }: { category: Category }) {
   const { isLoading, error, isError, data } = useDecks(category.id);
   const [show, setShow] = React.useState<boolean>(false);
