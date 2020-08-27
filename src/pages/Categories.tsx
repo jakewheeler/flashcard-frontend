@@ -19,7 +19,7 @@ import {
   useRadioGroup,
   Spinner,
 } from '@chakra-ui/core';
-import Card, { ResponsiveCardLayout } from '../components/Card';
+import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
 import { useDecks, useAllUserDecks, Deck, getCards } from '../pages/Decks';
 import useSelectedDeck from '../utils/deck';
 // import { useHistory } from 'react-router-dom';
@@ -75,12 +75,12 @@ function CardPanel({ deck }: { deck: Deck }) {
   if (isLoading) {
     return <Spinner color='white' />;
   }
-
+ 
   return (
     <>
       {data?.map((card) => (
         <Box key={card.id}>
-          <Card url={``}>{card.front}</Card>
+          <CardTemplate card={card} />
         </Box>
       ))}
     </>

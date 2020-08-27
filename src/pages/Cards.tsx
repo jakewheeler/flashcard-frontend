@@ -1,16 +1,10 @@
 import React from 'react';
 import { useQuery } from 'react-query';
 import useStore from '../utils/user';
-import Card, { ResponsiveCardLayout } from '../components/Card';
+import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-
-interface Card {
-  id: number;
-  front: string;
-  back: string;
-  type: string;
-}
+import { Card } from '../pages/Decks';
 
 async function getCards(token: string, categoryId: string, deckId: string) {
   const response = await axios.get<Card[]>(
@@ -53,12 +47,7 @@ function Cards() {
   return (
     <ResponsiveCardLayout>
       {data?.map((card) => (
-        <Card
-          url={`/categories/${categoryId}/decks/${deckId}/cards/${card.id}`}
-          key={card.id}
-        >
-          {card.front}
-        </Card>
+        <CardTemplate card={card} />
       ))}
     </ResponsiveCardLayout>
   );

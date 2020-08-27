@@ -1,16 +1,75 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import { Flex, Text, IconButton, Stack, HStack, Box } from '@chakra-ui/core';
+import React, { useState } from 'react';
+import {
+  Flex,
+  IconButton,
+  Stack,
+  HStack,
+  Box,
+  Button,
+  Text,
+} from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
+import ReactCardFlip from 'react-card-flip';
+import { Card } from '../pages/Decks';
+import useSelectedDeck from '../utils/deck';
 
 type CardProps = {
-  children: string;
-  url: string;
+  card: Card;
 };
 
-export default function Card({ children, url }: CardProps) {
+export default function CardTemplate({ card }: CardProps) {
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const handleClick = () => setIsFlipped(!isFlipped);
+
+  return (
+    <ReactCardFlip isFlipped={isFlipped}>
+      <CardStructure card={card}>
+        <Flex
+          className='front-card-flex'
+          flexDir='column'
+          justifyContent='space-between'
+          alignItems='center'
+          minH='inherit'
+          mb={50}
+        >
+          <Text color='teal.100'>{card.front}</Text>
+
+          <Button onClick={handleClick}>Flipperoni</Button>
+        </Flex>
+      </CardStructure>
+      <CardStructure card={card}>
+        <Flex
+          className='front-card-flex'
+          flexDir='column'
+          justifyContent='space-between'
+          alignItems='center'
+          minH='inherit'
+          mb={50}
+        >
+          <Text color='teal.100'>{card.back}</Text>
+
+          <Button onClick={handleClick}>Flipperoni</Button>
+        </Flex>
+      </CardStructure>
+    </ReactCardFlip>
+  );
+}
+
+type CardStructureProps = {
+  children: React.ReactNode;
+  card: Card;
+};
+
+function CardStructure({ children, card }: CardStructureProps) {
+  const deck = useSelectedDeck((state) => state.currentDeck);
+  if (!deck) return <Box className='no-deck-cards'></Box>;
+
+  const { id, categoryId } = deck;
+
+  const cardUrl = `/categories/${categoryId}/decks/${id}/cards/${card.id}`;
   return (
     <Stack
+      className='card-structure'
       borderWidth='1px'
       rounded='lg'
       overflow='hidden'
@@ -28,27 +87,18 @@ export default function Card({ children, url }: CardProps) {
             aria-label='Edit'
             colorScheme='teal'
             icon={<EditIcon />}
-            onClick={() => console.log('edit', url)}
+            onClick={() => console.log('edit', cardUrl)}
           />
           <IconButton
             aria-label='Delete'
             colorScheme='teal'
             icon={<DeleteIcon />}
-            onClick={() => console.log('delete')}
+            onClick={() => console.log('delete', cardUrl)}
           />
         </HStack>
       </Flex>
-      <Box as={RouterLink} to={url} h='100%' minW='300px' minH='350px'>
-        <Flex alignItems='center' justifyContent='center'>
-          <Text
-            color='teal.100'
-            overflowWrap='break-word'
-            maxW='300px'
-            padding='20px'
-          >
-            {children}
-          </Text>
-        </Flex>
+      <Box h='100%' minW='300px' minH='350px'>
+        {children}
       </Box>
     </Stack>
   );

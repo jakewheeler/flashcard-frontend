@@ -3,7 +3,8 @@ import useStore from '../utils/user';
 import { useQuery } from 'react-query';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import Card, { ResponsiveCardLayout } from '../components/Card';
+import { Box } from '@chakra-ui/core';
+import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
 
 export interface Deck {
   id: number;
@@ -88,11 +89,7 @@ function Decks() {
 
   return (
     <ResponsiveCardLayout>
-      {data?.map((deck) => (
-        <Card url={`/categories/${id}/decks/${deck.id}`} key={deck.id}>
-          {deck.name}
-        </Card>
-      ))}
+      <Box>Nope</Box>
     </ResponsiveCardLayout>
   );
 }

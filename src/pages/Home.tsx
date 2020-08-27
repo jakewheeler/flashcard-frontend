@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, VStack, Heading } from '@chakra-ui/core';
-import Card, { ResponsiveCardLayout } from '../components/Card';
 
 export default function Home() {
   return (
@@ -9,11 +8,6 @@ export default function Home() {
         Welcome to Flashy Cards
       </Heading>
       <Text>What will you learn today?</Text>
-      <ResponsiveCardLayout>
-        <Card url=''>Art</Card>
-        <Card url=''>Science</Card>
-        <Card url=''>History</Card>
-      </ResponsiveCardLayout>
     </VStack>
   );
 }
