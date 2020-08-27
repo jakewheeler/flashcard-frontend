@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/core';
 import { useDecks, useCards, useCategories, useAllUserDecks } from '../hooks';
 import { Category, Deck } from '../types/card';
-import useSelectedDeck from '../utils/deck';
+import useSelectedDeck from '../stores/deck';
 import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
 // import { useHistory } from 'react-router-dom';
 
@@ -64,7 +64,7 @@ function CardPanel({ deck }: { deck: Deck }) {
   return (
     <>
       {data?.map((card) => (
-        <Box key={card.id}>
+        <Box key={card.id} m={50}>
           <CardTemplate card={card} />
         </Box>
       ))}

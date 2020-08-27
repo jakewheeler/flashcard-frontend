@@ -5,7 +5,7 @@ import {
   getCategories,
   getCards,
 } from '../api/card-service';
-import useStore from '../utils/user';
+import useStore from '../stores/user';
 import { Deck } from '../types/card';
 
 export function useAllUserDecks() {

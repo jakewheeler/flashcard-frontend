@@ -4,11 +4,12 @@ import './App.css';
 import { ChakraProvider, CSSReset } from '@chakra-ui/core';
 import Layout from './components/Layout';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Login, { getDecodedJwt } from './pages/Login';
+import Login from './pages/Login';
 import theme from '@chakra-ui/theme';
 import Home from './pages/Home';
-import useStore from './utils/user';
+import useStore from './stores/user';
 import { getCategories } from './api/card-service';
+import { getDecodedJwt } from './utils';
 
 // check if a stored user already exists and use that for the login
 export function useStoredUser() {

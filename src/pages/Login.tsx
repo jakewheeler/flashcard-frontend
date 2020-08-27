@@ -11,18 +11,8 @@ import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
 import { fetchToken } from '../api/login-service';
-import useStore from '../utils/user';
-import jwtDecode from 'jwt-decode';
-
-interface JwtTokenPayload {
-  username: string;
-  iat: number;
-  exp: number;
-}
-
-export function getDecodedJwt(token: string) {
-  return jwtDecode<JwtTokenPayload>(token);
-}
+import useStore from '../stores/user';
+import { getDecodedJwt } from '../utils';
 
 export default function Login() {
   const setUser = useStore((state) => state.setUser);

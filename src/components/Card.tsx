@@ -11,7 +11,7 @@ import {
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
 import { Card } from '../types/card';
-import useSelectedDeck from '../utils/deck';
+import useSelectedDeck from '../stores/deck';
 
 type CardProps = {
   card: Card;
@@ -34,7 +34,9 @@ export default function CardTemplate({ card }: CardProps) {
         >
           <Text color='teal.100'>{card.front}</Text>
 
-          <Button onClick={handleClick}>Flipperoni</Button>
+          <Button onClick={handleClick}>
+            {isFlipped ? 'See description' : 'See answer'}
+          </Button>
         </Flex>
       </CardStructure>
       <CardStructure card={card}>
@@ -48,7 +50,9 @@ export default function CardTemplate({ card }: CardProps) {
         >
           <Text color='teal.100'>{card.back}</Text>
 
-          <Button onClick={handleClick}>Flipperoni</Button>
+          <Button onClick={handleClick}>
+            {isFlipped ? 'See description' : 'See answer'}
+          </Button>
         </Flex>
       </CardStructure>
     </ReactCardFlip>
