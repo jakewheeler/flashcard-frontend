@@ -29,6 +29,7 @@ export default function Login() {
   const { push } = useHistory();
   const [showLoginError, setShowLoginError] = useState<boolean>(false);
   const { handleSubmit, register, errors, formState } = useForm();
+
   const onSubmit = async (user: UserData) => {
     let token: string;
     try {
@@ -41,6 +42,7 @@ export default function Login() {
       setShowLoginError(true);
     }
   };
+
   return (
     <Box maxW='500px' margin='0 auto'>
       <form onSubmit={handleSubmit<UserData>(onSubmit)}>

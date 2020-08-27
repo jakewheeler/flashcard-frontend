@@ -22,6 +22,7 @@ import {
 import Card, { ResponsiveCardLayout } from '../components/Card';
 import { useDecks, useAllUserDecks, Deck, getCards } from '../pages/Decks';
 import useSelectedDeck from '../utils/deck';
+// import { useHistory } from 'react-router-dom';
 
 function useCategories() {
   const token = useStore((state) => state.token);
@@ -38,19 +39,28 @@ function useCards(deck: Deck) {
 
 export default function Categories() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
+  //   const { push } = useHistory();
+  //   const token = useStore((state) => state.token);
+
+  //   if (!token) {
+  //     push('/');
+  //   }
 
   return (
     <Flex className='lib-container'>
       {/* left side menu */}
       <MenuSection />
-      {/* shows cards in a specific deck */}
-      <ResponsiveCardLayout>
-        {!selectedDeck ? (
-          <Text>Select a deck</Text>
-        ) : (
-          <CardPanel deck={selectedDeck} />
+      <Flex flexDir='column'>
+        {selectedDeck && (
+          <Heading color='teal.900' ml={55} mt={5}>
+            {selectedDeck.name}
+          </Heading>
         )}
-      </ResponsiveCardLayout>
+        {/* shows cards in a specific deck */}
+        <ResponsiveCardLayout>
+          {selectedDeck && <CardPanel deck={selectedDeck} />}
+        </ResponsiveCardLayout>
+      </Flex>
     </Flex>
   );
 }
@@ -64,10 +74,6 @@ function CardPanel({ deck }: { deck: Deck }) {
 
   if (isLoading) {
     return <Spinner color='white' />;
-  }
-
-  if (!isLoading && !isError && data && data.length < 1) {
-    return <Text color='teal.900'>No cards yet</Text>;
   }
 
   return (
