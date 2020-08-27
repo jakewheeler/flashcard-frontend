@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
-import { useQuery } from 'react-query';
-import { getCategories, Category } from '../api/cardService';
-import useStore from '../utils/user';
 import {
   Box,
-  Heading,
   Flex,
   RadioGroup,
   Radio,
@@ -18,26 +14,15 @@ import {
   UseRadioProps,
   useRadioGroup,
   Spinner,
+  Heading,
 } from '@chakra-ui/core';
-import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
-import { useDecks, useAllUserDecks, Deck, getCards } from '../pages/Decks';
+import { useDecks, useCards, useCategories, useAllUserDecks } from '../hooks';
+import { Category, Deck } from '../types/card';
 import useSelectedDeck from '../utils/deck';
+import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
 // import { useHistory } from 'react-router-dom';
 
-function useCategories() {
-  const token = useStore((state) => state.token);
-  return useQuery(`${token}categories`, () => getCategories(token));
-}
-
-function useCards(deck: Deck) {
-  const token = useStore((state) => state.token);
-  return useQuery(
-    `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`,
-    () => getCards(token, deck)
-  );
-}
-
-export default function Categories() {
+export default function Library() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
   //   const { push } = useHistory();
   //   const token = useStore((state) => state.token);
@@ -75,7 +60,7 @@ function CardPanel({ deck }: { deck: Deck }) {
   if (isLoading) {
     return <Spinner color='white' />;
   }
- 
+
   return (
     <>
       {data?.map((card) => (

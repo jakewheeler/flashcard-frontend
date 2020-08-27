@@ -1,16 +1,14 @@
 import React, { useEffect } from 'react';
-import Categories from './pages/Categories';
+import Library from './pages/Library';
 import './App.css';
 import { ChakraProvider, CSSReset } from '@chakra-ui/core';
 import Layout from './components/Layout';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login, { getDecodedJwt } from './pages/Login';
 import theme from '@chakra-ui/theme';
-import Decks from './pages/Decks';
 import Home from './pages/Home';
-import Cards from './pages/Cards';
 import useStore from './utils/user';
-import { getCategories } from './api/cardService';
+import { getCategories } from './api/card-service';
 
 // check if a stored user already exists and use that for the login
 export function useStoredUser() {
@@ -46,13 +44,7 @@ function App() {
             <Switch>
               <Route exact path='/' component={Home} />
               <Route path='/login' component={Login} />
-              <Route exact path='/categories' component={Categories} />
-              <Route exact path='/categories/:id/decks' component={Decks} />
-              <Route
-                exact
-                path='/categories/:categoryId/decks/:deckId'
-                component={Cards}
-              />
+              <Route exact path='/library' component={Library} />
             </Switch>
           </Layout>
         </Router>

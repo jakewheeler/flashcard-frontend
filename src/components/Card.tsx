@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
-import { Card } from '../pages/Decks';
+import { Card } from '../types/card';
 import useSelectedDeck from '../utils/deck';
 
 type CardProps = {

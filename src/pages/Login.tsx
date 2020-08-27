@@ -10,7 +10,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
-import { fetchToken } from '../api/loginService';
+import { fetchToken } from '../api/login-service';
 import useStore from '../utils/user';
 import jwtDecode from 'jwt-decode';
 

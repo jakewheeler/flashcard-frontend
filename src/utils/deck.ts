@@ -1,5 +1,5 @@
 import create from 'zustand';
-import { Deck } from '../pages/Decks';
+import { Deck } from '../types/card';
 
 interface DeckValues {
   currentDeck: Deck | null;

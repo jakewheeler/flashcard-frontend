@@ -4,7 +4,7 @@ import useStore from '../utils/user';
 import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
-import { Card } from '../pages/Decks';
+import { Card } from '../types/card';
 
 async function getCards(token: string, categoryId: string, deckId: string) {
   const response = await axios.get<Card[]>(

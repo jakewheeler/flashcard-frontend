@@ -38,7 +38,7 @@ function Header() {
             Home
           </Link>
           {user ? (
-            <Link as={RouterLink} to='/categories' color='teal.100'>
+            <Link as={RouterLink} to='/library' color='teal.100'>
               My Library
             </Link>
           ) : null}
