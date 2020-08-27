@@ -7,6 +7,8 @@ import {
 } from '../api/card-service';
 import useStore from '../stores/user';
 import { Deck } from '../types/card';
+import React, { useEffect } from 'react';
+import { getDecodedJwt } from '../utils';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
@@ -31,4 +33,26 @@ export function useCards(deck: Deck) {
     `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`,
     () => getCards(token, deck)
   );
+}
+
+// check if a stored user already exists and use that for the login
+export function useStoredUser() {
+  const { setUser, token, user } = useStore();
+  useEffect(() => {
+    const token = window.localStorage.getItem('token');
+    async function authCheck() {
+      if (token) {
+        try {
+          await getCategories(token);
+          let user = getDecodedJwt(token).username;
+          setUser(user, token);
+        } catch (err) {
+          console.error('Existing token is not valid');
+          setUser('', '');
+          window.localStorage.setItem('token', '');
+        }
+      }
+    }
+    authCheck();
+  }, [token, user, setUser]);
 }
