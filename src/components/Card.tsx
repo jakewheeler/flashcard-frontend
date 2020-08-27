@@ -34,7 +34,7 @@ export default function CardTemplate({ card }: CardProps) {
         >
           <Text color='teal.100'>{card.front}</Text>
 
-          <Button onClick={handleClick}>
+          <Button colorScheme='teal' onClick={handleClick}>
             {isFlipped ? 'See description' : 'See answer'}
           </Button>
         </Flex>
