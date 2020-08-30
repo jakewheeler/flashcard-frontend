@@ -89,8 +89,6 @@ export function CardStructure({ children, card }: CardStructureProps) {
     ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
     : '';
 
-  console.log(cacheKey);
-
   const [mutate] = useMutation(() => deleteCard(token, deck!, card), {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
