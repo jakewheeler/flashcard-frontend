@@ -242,7 +242,11 @@ function CardForm({ firstFieldRef, onCancel }: CardFormProps) {
   );
 }
 
-export function CardFormPopover() {
+type CardFormPopoverProps = {
+  trigger: React.ReactNode;
+};
+
+export function CardFormPopover({ trigger }: CardFormPopoverProps) {
   const [isOpen, setIsOpen] = React.useState(false);
   const firstFieldRef = React.useRef(null);
   const open = () => setIsOpen(true);
@@ -257,11 +261,7 @@ export function CardFormPopover() {
         placement='right'
         closeOnBlur={false}
       >
-        <PopoverTrigger>
-          <Button width={20} colorScheme='teal'>
-            Add card
-          </Button>
-        </PopoverTrigger>
+        <PopoverTrigger>{trigger}</PopoverTrigger>
         <PopoverContent p={5} bg='teal.500'>
           <FocusLock returnFocus persistentFocus={false}>
             <PopoverArrow bg='white' />

@@ -34,6 +34,12 @@ export default function Library() {
   //     push('/');
   //   }
 
+  const addCardBtn = (
+    <Button width={20} colorScheme='teal'>
+      Add card
+    </Button>
+  );
+
   return (
     <Flex className='lib-container'>
       {/* left side menu */}
@@ -43,7 +49,7 @@ export default function Library() {
           <Heading color='teal.900'>
             {selectedDeck ? selectedDeck.name : 'Select a deck'}
           </Heading>
-          {selectedDeck && <CardFormPopover />}
+          {selectedDeck && <CardFormPopover trigger={addCardBtn} />}
         </VStack>
         {/* shows cards in a specific deck */}
         <ResponsiveCardLayout>
