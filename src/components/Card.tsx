@@ -25,7 +25,7 @@ import FocusLock from 'react-focus-lock';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import { createCard, CreateCardType } from '../api/card-service';
+import { createCard, CreateCardType, deleteCard } from '../api/card-service';
 
 type CardProps = {
   card: Card;
@@ -80,11 +80,22 @@ type CardStructureProps = {
 
 export function CardStructure({ children, card }: CardStructureProps) {
   const deck = useSelectedDeck((state) => state.currentDeck);
+  const token = useStore((state) => state.token);
+
+  let cardUrl: string = deck
+    ? `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`
+    : '';
+  let cacheKey: string = deck
+    ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
+    : '';
+
+  console.log(cacheKey);
+
+  const [mutate] = useMutation(() => deleteCard(token, deck!, card), {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+  });
   if (!deck) return <Box className='no-deck-cards'></Box>;
 
-  const { id, categoryId } = deck;
-
-  const cardUrl = `/categories/${categoryId}/decks/${id}/cards/${card.id}`;
   return (
     <Stack
       className='card-structure'
@@ -110,7 +121,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
             aria-label='Delete'
             colorScheme='teal'
             icon={<DeleteIcon />}
-            onClick={() => console.log('delete', cardUrl)}
+            onClick={async () => await mutate()}
           />
         </HStack>
       </Flex>

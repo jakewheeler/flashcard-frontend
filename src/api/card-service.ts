@@ -84,3 +84,16 @@ export async function createCard(
 
   throw new Error(response.statusText);
 }
+
+export async function deleteCard(
+  token: string,
+  deck: Deck,
+  card: Card
+): Promise<void> {
+  await axios.delete(
+    `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+}
