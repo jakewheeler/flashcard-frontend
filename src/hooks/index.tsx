@@ -12,26 +12,23 @@ import { getDecodedJwt } from '../utils';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
-  const key: string = `${token}/categories/all/decks`;
-  return useQuery(key, () => getAllUserDecks(token));
+  return useQuery(`/categories/all/decks`, () => getAllUserDecks(token));
 }
 
 export function useDecks(id: string) {
   const token = useStore((state) => state.token);
-  const key: string = `${token}/categories/${id}/decks`;
-  return useQuery(key, () => getDecks(token, id));
+  return useQuery(`/categories/${id}/decks`, () => getDecks(token, id));
 }
 
 export function useCategories() {
   const token = useStore((state) => state.token);
-  return useQuery(`${token}categories`, () => getCategories(token));
+  return useQuery(`/categories`, () => getCategories(token));
 }
 
 export function useCards(deck: Deck) {
   const token = useStore((state) => state.token);
-  return useQuery(
-    `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`,
-    () => getCards(token, deck)
+  return useQuery(`/categories/${deck.categoryId}/decks/${deck.id}/cards`, () =>
+    getCards(token, deck)
   );
 }
 

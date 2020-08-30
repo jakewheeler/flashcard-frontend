@@ -19,7 +19,10 @@ import {
 import { useDecks, useCards, useCategories, useAllUserDecks } from '../hooks';
 import { Category, Deck } from '../types/card';
 import useSelectedDeck from '../stores/deck';
-import CardTemplate, { ResponsiveCardLayout } from '../components/Card';
+import CardTemplate, {
+  ResponsiveCardLayout,
+  CardFormPopover,
+} from '../components/Card';
 // import { useHistory } from 'react-router-dom';
 
 export default function Library() {
@@ -36,9 +39,12 @@ export default function Library() {
       {/* left side menu */}
       <MenuSection />
       <Flex flexDir='column'>
-        <Heading color='teal.900' ml={55} mt={5}>
-          {selectedDeck ? selectedDeck.name : 'Select a deck'}
-        </Heading>
+        <VStack ml={60} mt={5} align='left' spacing={3}>
+          <Heading color='teal.900'>
+            {selectedDeck ? selectedDeck.name : 'Select a deck'}
+          </Heading>
+          {selectedDeck && <CardFormPopover />}
+        </VStack>
         {/* shows cards in a specific deck */}
         <ResponsiveCardLayout>
           {selectedDeck && <CardView deck={selectedDeck} />}

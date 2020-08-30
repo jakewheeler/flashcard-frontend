@@ -53,3 +53,34 @@ export async function getCards(token: string, deck: Deck) {
 
   throw new Error(response.statusText);
 }
+
+export type CreateCardType = {
+  front: string;
+  back: string;
+  type: string;
+};
+
+export async function createCard(
+  token: string,
+  deck: Deck,
+  { front, back, type }: CreateCardType
+) {
+  const body: CreateCardType = {
+    front,
+    back,
+    type,
+  };
+  const response = await axios.post<Card>(
+    `/categories/${deck.categoryId}/decks/${deck.id}/cards`,
+    body,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}

@@ -7,11 +7,25 @@ import {
   Box,
   Button,
   Text,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
 import { Card } from '../types/card';
 import useSelectedDeck from '../stores/deck';
+import FocusLock from 'react-focus-lock';
+import useStore from '../stores/user';
+import { useForm } from 'react-hook-form';
+import { useMutation, queryCache } from 'react-query';
+import { createCard, CreateCardType } from '../api/card-service';
 
 type CardProps = {
   card: Card;
@@ -50,7 +64,7 @@ export default function CardTemplate({ card }: CardProps) {
         >
           <Text color='teal.100'>{card.back}</Text>
 
-          <Button onClick={handleClick}>
+          <Button colorScheme='teal' onClick={handleClick}>
             {isFlipped ? 'See description' : 'See answer'}
           </Button>
         </Flex>
@@ -78,7 +92,6 @@ export function CardStructure({ children, card }: CardStructureProps) {
       rounded='lg'
       overflow='hidden'
       bg='teal.600'
-      // margin='50px'
       _hover={{
         borderColor: 'black',
         bg: 'teal.500',
@@ -121,5 +134,133 @@ export function ResponsiveCardLayout({ children }: ResponsiveCardLayoutProps) {
     >
       {children}
     </Flex>
+  );
+}
+
+type TextInputProps = {
+  id?: string;
+  name: string;
+  label: string;
+  defaultValue?: string;
+};
+
+const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
+  (props, ref) => {
+    return (
+      <FormControl>
+        <FormLabel color='teal.100' htmlFor={props.id}>
+          {props.label}
+        </FormLabel>
+        <Input ref={ref} id={props.id} {...props} />
+      </FormControl>
+    );
+  }
+);
+
+type CardFormProps = {
+  firstFieldRef: React.MutableRefObject<HTMLInputElement | null>;
+  onCancel: () => void;
+};
+
+function CardForm({ firstFieldRef, onCancel }: CardFormProps) {
+  const token = useStore((state) => state.token);
+  const selectedDeck = useSelectedDeck((state) => state.currentDeck);
+  const cacheKey = `/categories/${selectedDeck!.categoryId}/decks/${
+    selectedDeck!.id
+  }/cards`;
+  const { handleSubmit, register, reset, formState } = useForm();
+  const [mutate] = useMutation(
+    (formData: CreateCardType) => {
+      return createCard(token, selectedDeck!, formData);
+    },
+    { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
+  );
+
+  const onSubmit = async (card: CreateCardType) => {
+    try {
+      await mutate(card);
+      reset();
+      onCancel();
+    } catch (e) {
+      console.error(`Could not add new card to ${selectedDeck!.name}`);
+    }
+  };
+
+  return (
+    <VStack spacing={4}>
+      <form onSubmit={handleSubmit<CreateCardType>(onSubmit)}>
+        <TextInput
+          name='front'
+          label='Description'
+          id='front'
+          ref={(e) => {
+            firstFieldRef.current = e;
+            register(e, { required: true });
+          }}
+        />
+        <TextInput
+          name='back'
+          label='Answer'
+          id='back'
+          ref={register({ required: true })}
+        />
+        <TextInput
+          name='type'
+          label='Type'
+          id='type'
+          ref={register({ required: true })}
+        />
+        <HStack justifyContent='flex-end' mt={5}>
+          <Button
+            variant='outline'
+            onClick={onCancel}
+            color='teal.100'
+            isDisabled={formState.isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant='outline'
+            color='teal.100'
+            isLoading={formState.isSubmitting}
+            type='submit'
+          >
+            Save
+          </Button>
+        </HStack>
+      </form>
+    </VStack>
+  );
+}
+
+export function CardFormPopover() {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const firstFieldRef = React.useRef(null);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+  return (
+    <>
+      <Popover
+        isOpen={isOpen}
+        initialFocusRef={firstFieldRef}
+        onOpen={open}
+        onClose={close}
+        placement='right'
+        closeOnBlur={false}
+      >
+        <PopoverTrigger>
+          <Button width={20} colorScheme='teal'>
+            Add card
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent p={5} bg='teal.500'>
+          <FocusLock returnFocus persistentFocus={false}>
+            <PopoverArrow bg='white' />
+            <PopoverCloseButton />
+            <CardForm firstFieldRef={firstFieldRef} onCancel={close} />
+          </FocusLock>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }
