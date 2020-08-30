@@ -165,7 +165,7 @@ type CardFormProps = {
 function CardForm({ firstFieldRef, onCancel }: CardFormProps) {
   const token = useStore((state) => state.token);
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
-  const cacheKey = `/categories/${selectedDeck!.categoryId}/decks/${
+  const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
     selectedDeck!.id
   }/cards`;
   const { handleSubmit, register, reset, formState } = useForm();
