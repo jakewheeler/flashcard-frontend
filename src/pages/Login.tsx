@@ -18,7 +18,7 @@ export default function Login() {
   const setUser = useStore((state) => state.setUser);
   const { push } = useHistory();
   const [showLoginError, setShowLoginError] = useState<boolean>(false);
-  const { handleSubmit, register, errors, formState } = useForm();
+  const { handleSubmit, register, errors, formState } = useForm<UserData>();
 
   const onSubmit = async (user: UserData) => {
     let token: string;
@@ -35,7 +35,7 @@ export default function Login() {
 
   return (
     <Box maxW='500px' margin='0 auto'>
-      <form onSubmit={handleSubmit<UserData>(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl>
           {showLoginError && (
             <Text color='red.500'>Username and password are incorrect</Text>

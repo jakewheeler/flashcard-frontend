@@ -7,21 +7,15 @@ import {
   Box,
   Button,
   Text,
-  FormControl,
   FormLabel,
-  Input,
+  Textarea,
   VStack,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
+  Collapse,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
 import { Card } from '../types/card';
 import useSelectedDeck from '../stores/deck';
-import FocusLock from 'react-focus-lock';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
@@ -114,7 +108,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
     >
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
-          <CardFormPopover
+          {/* <CardFormPopover
             trigger={
               <IconButton
                 aria-label='Edit'
@@ -123,7 +117,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
                 onClick={() => console.log('edit', cardUrl)}
               />
             }
-          />
+          /> */}
 
           <IconButton
             aria-label='Delete'
@@ -156,65 +150,31 @@ export function ResponsiveCardLayout({ children }: ResponsiveCardLayoutProps) {
   );
 }
 
-type TextInputProps = {
-  id?: string;
-  name: string;
-  label: string;
-  defaultValue?: string;
-};
-
-const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
-  (props, ref) => {
-    return (
-      <FormControl>
-        <FormLabel color='teal.100' htmlFor={props.id}>
-          {props.label}
-        </FormLabel>
-        <Input ref={ref} id={props.id} {...props} />
-      </FormControl>
-    );
-  }
-);
-
 type CardFormProps = ModifyCardFormProps & {
-  onSubmit: (card: CreateCardType) => Promise<void>;
+  onSubmit: (card: CreateCardType, e: any) => Promise<void>;
 };
 
-function CardForm({ firstFieldRef, onCancel, onSubmit }: CardFormProps) {
-  const { handleSubmit, register, formState } = useForm();
+function CardForm({ onCancel, onSubmit }: CardFormProps) {
+  const { handleSubmit, register, formState } = useForm<CreateCardType>();
   return (
-    <VStack spacing={4}>
-      <form onSubmit={handleSubmit<CreateCardType>(onSubmit)}>
-        <TextInput
-          name='front'
-          label='Description'
-          ref={(e) => {
-            firstFieldRef.current = e;
-            register(e, { required: true });
-          }}
-        />
-        <TextInput
-          name='back'
-          label='Answer'
-          ref={register({ required: true })}
-        />
-        <TextInput
-          name='type'
-          label='Type'
-          ref={register({ required: true })}
-        />
-        <HStack justifyContent='flex-end' mt={5}>
+    <VStack spacing={4} color='teal.900' align='left'>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormLabel color='white'>Description</FormLabel>
+        <Textarea name='front' type='text' ref={register({ required: true })} />
+        <FormLabel color='white'>Answer</FormLabel>
+        <Textarea type='text' name='back' ref={register({ required: true })} />
+        <FormLabel color='white'>Type</FormLabel>
+        <Textarea type='text' name='type' ref={register({ required: true })} />
+        <HStack justifyContent='flex-start' mt={5}>
           <Button
-            variant='outline'
+            colorScheme='teal'
             onClick={onCancel}
-            color='teal.100'
             isDisabled={formState.isSubmitting}
           >
             Cancel
           </Button>
           <Button
-            variant='outline'
-            color='teal.100'
+            colorScheme='teal'
             isLoading={formState.isSubmitting}
             type='submit'
           >
@@ -227,17 +187,15 @@ function CardForm({ firstFieldRef, onCancel, onSubmit }: CardFormProps) {
 }
 
 type ModifyCardFormProps = {
-  firstFieldRef: React.MutableRefObject<HTMLInputElement | null>;
   onCancel: () => void;
 };
 
-function AddCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
+function AddCardForm({ onCancel }: ModifyCardFormProps) {
   const token = useStore((state) => state.token);
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
   const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
     selectedDeck!.id
   }/cards`;
-  const { reset } = useForm();
   const [mutate] = useMutation(
     (formData: CreateCardType) => {
       return createCard(token, selectedDeck!, formData);
@@ -245,23 +203,17 @@ function AddCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
     { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
   );
 
-  const onSubmit = async (card: CreateCardType) => {
+  const onSubmit = async (card: CreateCardType, e: any) => {
     try {
       await mutate(card);
-      reset();
+      e.target.reset();
       onCancel();
     } catch (e) {
       console.error(`Could not add new card to ${selectedDeck!.name}`);
     }
   };
 
-  return (
-    <CardForm
-      firstFieldRef={firstFieldRef}
-      onCancel={onCancel}
-      onSubmit={onSubmit}
-    />
-  );
+  return <CardForm onCancel={onCancel} onSubmit={onSubmit} />;
 }
 // function EditCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
 //   const token = useStore((state) => state.token);
@@ -296,34 +248,19 @@ function AddCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
 //   );
 // }
 
-type CardFormPopoverProps = {
-  trigger: React.ReactNode;
-};
+export function CreateCardCollapsible() {
+  const [show, setShow] = React.useState(false);
 
-export function CardFormPopover({ trigger }: CardFormPopoverProps) {
-  const [isOpen, setIsOpen] = React.useState(false);
-  const firstFieldRef = React.useRef(null);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const handleToggle = () => setShow(!show);
+
   return (
     <>
-      <Popover
-        isOpen={isOpen}
-        initialFocusRef={firstFieldRef}
-        onOpen={open}
-        onClose={close}
-        placement='right'
-        closeOnBlur={false}
-      >
-        <PopoverTrigger>{trigger}</PopoverTrigger>
-        <PopoverContent p={5} bg='teal.500'>
-          <FocusLock returnFocus persistentFocus={false}>
-            <PopoverArrow bg='white' />
-            <PopoverCloseButton />
-            <AddCardForm firstFieldRef={firstFieldRef} onCancel={close} />
-          </FocusLock>
-        </PopoverContent>
-      </Popover>
+      <Button colorScheme='teal' onClick={handleToggle} w={20}>
+        New card
+      </Button>
+      <Collapse mt={4} isOpen={show} mr={230}>
+        <AddCardForm onCancel={handleToggle} />
+      </Collapse>
     </>
   );
 }

@@ -21,7 +21,7 @@ import { Category, Deck } from '../types/card';
 import useSelectedDeck from '../stores/deck';
 import CardTemplate, {
   ResponsiveCardLayout,
-  CardFormPopover,
+  CreateCardCollapsible,
 } from '../components/Card';
 // import { useHistory } from 'react-router-dom';
 
@@ -34,12 +34,6 @@ export default function Library() {
   //     push('/');
   //   }
 
-  const addCardBtn = (
-    <Button width={20} colorScheme='teal'>
-      Add card
-    </Button>
-  );
-
   return (
     <Flex className='lib-container'>
       {/* left side menu */}
@@ -49,7 +43,7 @@ export default function Library() {
           <Heading color='teal.900'>
             {selectedDeck ? selectedDeck.name : 'Select a deck'}
           </Heading>
-          {selectedDeck && <CardFormPopover trigger={addCardBtn} />}
+          {selectedDeck && <CreateCardCollapsible />}
         </VStack>
         {/* shows cards in a specific deck */}
         <ResponsiveCardLayout>
