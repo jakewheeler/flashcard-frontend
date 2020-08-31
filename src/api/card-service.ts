@@ -85,6 +85,29 @@ export async function createCard(
   throw new Error(response.statusText);
 }
 
+export async function editCard(
+  token: string,
+  deck: Deck,
+  card: Card,
+  { front, back, type }: CreateCardType
+) {
+  const body: CreateCardType = { front, back, type };
+
+  const response = await axios.patch<Card>(
+    `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`,
+    body,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
 export async function deleteCard(
   token: string,
   deck: Deck,

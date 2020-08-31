@@ -25,7 +25,12 @@ import FocusLock from 'react-focus-lock';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import { createCard, CreateCardType, deleteCard } from '../api/card-service';
+import {
+  createCard,
+  CreateCardType,
+  deleteCard,
+  editCard,
+} from '../api/card-service';
 
 type CardProps = {
   card: Card;
@@ -109,12 +114,17 @@ export function CardStructure({ children, card }: CardStructureProps) {
     >
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
-          <IconButton
-            aria-label='Edit'
-            colorScheme='teal'
-            icon={<EditIcon />}
-            onClick={() => console.log('edit', cardUrl)}
+          <CardFormPopover
+            trigger={
+              <IconButton
+                aria-label='Edit'
+                colorScheme='teal'
+                icon={<EditIcon />}
+                onClick={() => console.log('edit', cardUrl)}
+              />
+            }
           />
+
           <IconButton
             aria-label='Delete'
             colorScheme='teal'
@@ -166,42 +176,18 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
   }
 );
 
-type CardFormProps = {
-  firstFieldRef: React.MutableRefObject<HTMLInputElement | null>;
-  onCancel: () => void;
+type CardFormProps = ModifyCardFormProps & {
+  onSubmit: (card: CreateCardType) => Promise<void>;
 };
 
-function CardForm({ firstFieldRef, onCancel }: CardFormProps) {
-  const token = useStore((state) => state.token);
-  const selectedDeck = useSelectedDeck((state) => state.currentDeck);
-  const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
-    selectedDeck!.id
-  }/cards`;
-  const { handleSubmit, register, reset, formState } = useForm();
-  const [mutate] = useMutation(
-    (formData: CreateCardType) => {
-      return createCard(token, selectedDeck!, formData);
-    },
-    { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
-  );
-
-  const onSubmit = async (card: CreateCardType) => {
-    try {
-      await mutate(card);
-      reset();
-      onCancel();
-    } catch (e) {
-      console.error(`Could not add new card to ${selectedDeck!.name}`);
-    }
-  };
-
+function CardForm({ firstFieldRef, onCancel, onSubmit }: CardFormProps) {
+  const { handleSubmit, register, formState } = useForm();
   return (
     <VStack spacing={4}>
       <form onSubmit={handleSubmit<CreateCardType>(onSubmit)}>
         <TextInput
           name='front'
           label='Description'
-          id='front'
           ref={(e) => {
             firstFieldRef.current = e;
             register(e, { required: true });
@@ -210,13 +196,11 @@ function CardForm({ firstFieldRef, onCancel }: CardFormProps) {
         <TextInput
           name='back'
           label='Answer'
-          id='back'
           ref={register({ required: true })}
         />
         <TextInput
           name='type'
           label='Type'
-          id='type'
           ref={register({ required: true })}
         />
         <HStack justifyContent='flex-end' mt={5}>
@@ -242,6 +226,76 @@ function CardForm({ firstFieldRef, onCancel }: CardFormProps) {
   );
 }
 
+type ModifyCardFormProps = {
+  firstFieldRef: React.MutableRefObject<HTMLInputElement | null>;
+  onCancel: () => void;
+};
+
+function AddCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
+  const token = useStore((state) => state.token);
+  const selectedDeck = useSelectedDeck((state) => state.currentDeck);
+  const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
+    selectedDeck!.id
+  }/cards`;
+  const { reset } = useForm();
+  const [mutate] = useMutation(
+    (formData: CreateCardType) => {
+      return createCard(token, selectedDeck!, formData);
+    },
+    { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
+  );
+
+  const onSubmit = async (card: CreateCardType) => {
+    try {
+      await mutate(card);
+      reset();
+      onCancel();
+    } catch (e) {
+      console.error(`Could not add new card to ${selectedDeck!.name}`);
+    }
+  };
+
+  return (
+    <CardForm
+      firstFieldRef={firstFieldRef}
+      onCancel={onCancel}
+      onSubmit={onSubmit}
+    />
+  );
+}
+// function EditCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
+//   const token = useStore((state) => state.token);
+//   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
+//   const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
+//     selectedDeck!.id
+//   }/cards`;
+//   const { reset } = useForm();
+//   const [mutate] = useMutation(
+//     (formData: CreateCardType) => {
+//       return editCard(token, selectedDeck!, formData);
+//     },
+//     { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
+//   );
+
+//   const onSubmit = async (card: CreateCardType) => {
+//     try {
+//       await mutate(card);
+//       reset();
+//       onCancel();
+//     } catch (e) {
+//       console.error(`Could not add new card to ${selectedDeck!.name}`);
+//     }
+//   };
+
+//   return (
+//     <CardForm
+//       firstFieldRef={firstFieldRef}
+//       onCancel={onCancel}
+//       onSubmit={onSubmit}
+//     />
+//   );
+// }
+
 type CardFormPopoverProps = {
   trigger: React.ReactNode;
 };
@@ -266,7 +320,7 @@ export function CardFormPopover({ trigger }: CardFormPopoverProps) {
           <FocusLock returnFocus persistentFocus={false}>
             <PopoverArrow bg='white' />
             <PopoverCloseButton />
-            <CardForm firstFieldRef={firstFieldRef} onCancel={close} />
+            <AddCardForm firstFieldRef={firstFieldRef} onCancel={close} />
           </FocusLock>
         </PopoverContent>
       </Popover>
