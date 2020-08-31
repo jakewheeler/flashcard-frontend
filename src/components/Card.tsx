@@ -155,7 +155,9 @@ type CardFormProps = ModifyCardFormProps & {
 };
 
 function CardForm({ onCancel, onSubmit }: CardFormProps) {
-  const { handleSubmit, register, formState } = useForm<CreateCardType>();
+  const { handleSubmit, register, formState, reset } = useForm<
+    CreateCardType
+  >();
   return (
     <VStack spacing={4} color='teal.900' align='left'>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -168,7 +170,10 @@ function CardForm({ onCancel, onSubmit }: CardFormProps) {
         <HStack justifyContent='flex-start' mt={5}>
           <Button
             colorScheme='teal'
-            onClick={onCancel}
+            onClick={() => {
+              onCancel();
+              reset();
+            }}
             isDisabled={formState.isSubmitting}
           >
             Cancel
@@ -208,7 +213,8 @@ function AddCardForm({ onCancel }: ModifyCardFormProps) {
       await mutate(card);
       e.target.reset();
       onCancel();
-    } catch (e) {
+    } catch (err) {
+      console.error(err);
       console.error(`Could not add new card to ${selectedDeck!.name}`);
     }
   };
