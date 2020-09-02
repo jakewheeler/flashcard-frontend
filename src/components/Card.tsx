@@ -47,7 +47,7 @@ export default function CardTemplate({ card }: CardProps) {
         >
           <Text color='teal.100'>{card.front}</Text>
 
-          <Button colorScheme='teal' onClick={handleClick}>
+          <Button colorScheme='white' onClick={handleClick}>
             {isFlipped ? 'See description' : 'See answer'}
           </Button>
         </Flex>
@@ -63,7 +63,7 @@ export default function CardTemplate({ card }: CardProps) {
         >
           <Text color='teal.100'>{card.back}</Text>
 
-          <Button colorScheme='teal' onClick={handleClick}>
+          <Button colorScheme='white' onClick={handleClick}>
             {isFlipped ? 'See description' : 'See answer'}
           </Button>
         </Flex>
@@ -100,11 +100,12 @@ export function CardStructure({ children, card }: CardStructureProps) {
       rounded='lg'
       overflow='hidden'
       bg='teal.600'
-      _hover={{
-        borderColor: 'black',
-        bg: 'teal.500',
-        color: 'black',
-      }}
+      maxW='300px'
+      // _hover={{
+      //   borderColor: 'black',
+      //   bg: 'teal.500',
+      //   color: 'black',
+      // }}
     >
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
@@ -263,13 +264,13 @@ export function CreateCardCollapsible() {
   const handleToggle = () => setShow(!show);
 
   return (
-    <>
+    <Box w='700px'>
       <Button colorScheme='teal' onClick={handleToggle} w={20}>
         New card
       </Button>
       <Collapse mt={4} isOpen={show} mr={230}>
         <AddCardForm onCancel={handleToggle} />
       </Collapse>
-    </>
+    </Box>
   );
 }

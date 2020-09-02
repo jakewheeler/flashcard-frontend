@@ -4,6 +4,7 @@ import {
   getDecks,
   getCategories,
   getCards,
+  getCategory,
 } from '../api/card-service';
 import useStore from '../stores/user';
 import { Deck } from '../types/card';
@@ -20,6 +21,11 @@ export function useAllUserDecks() {
 export function useDecks(id: string) {
   const token = useStore((state) => state.token);
   return useQuery(`${token}/categories/${id}/decks`, () => getDecks(token, id));
+}
+
+export function useCategory(id: string) {
+  const token = useStore((state) => state.token);
+  return useQuery(`${token}/categories/${id}`, () => getCategory(token, id));
 }
 
 export function useCategories() {

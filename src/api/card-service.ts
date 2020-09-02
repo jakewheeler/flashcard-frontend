@@ -1,6 +1,23 @@
 import axios from 'axios';
 import { Category, Deck, Card } from '../types/card';
 
+export async function getCategory(
+  token: string,
+  id: string
+): Promise<Category> {
+  const response = await axios.get<Category>(`/categories/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
 export async function getCategories(token: string): Promise<Category[]> {
   const response = await axios.get<Category[]>('/categories', {
     headers: {
