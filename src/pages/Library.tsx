@@ -15,7 +15,9 @@ import {
   useRadioGroup,
   Spinner,
   Heading,
+  IconButton,
 } from '@chakra-ui/core';
+import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { useDecks, useCards, useCategories, useAllUserDecks } from '../hooks';
 import { Category, Deck } from '../types/card';
 import useSelectedDeck from '../stores/deck';
@@ -23,6 +25,9 @@ import CardTemplate, {
   ResponsiveCardLayout,
   CreateCardCollapsible,
 } from '../components/Card';
+import { useMutation, queryCache } from 'react-query';
+import { deleteDeck } from '../api/card-service';
+import useStore from '../stores/user';
 // import { useHistory } from 'react-router-dom';
 
 export default function Library() {
@@ -183,13 +188,34 @@ function CollapsibleCategory({ category }: { category: Category }) {
 
 interface CustomRadioBtnProps extends UseRadioProps {
   children: React.ReactNode;
+  deck: Deck;
 }
 
 function RadioCard(props: CustomRadioBtnProps) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
+  const { deck } = props;
+  const { currentDeck, setDeck } = useSelectedDeck();
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
+
+  const token = useStore((state) => state.token);
+
+  const cacheKey = `${token}/categories/all/decks`;
+
+  const [mutate] = useMutation(() => deleteDeck(token, deck), {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+  });
+
+  const deletion = async () => {
+    try {
+      await mutate();
+      setDeck(null);
+    } catch (err) {
+      console.error(`Could not delete deck: ${deck.name}`);
+      console.error(err);
+    }
+  };
 
   return (
     <Box as='label'>
@@ -211,7 +237,16 @@ function RadioCard(props: CustomRadioBtnProps) {
         px={5}
         py={3}
       >
-        {props.children}
+        <HStack justifyContent='space-between'>
+          {props.children}
+          {currentDeck?.name === deck.name && (
+            <IconButton
+              aria-label={`delete ${props.deck?.name}`}
+              icon={<DeleteIcon />}
+              onClick={deletion}
+            />
+          )}
+        </HStack>
       </Box>
     </Box>
   );
@@ -222,24 +257,25 @@ type RadioCardGroupProps = {
 };
 
 function RadioCardGroup({ decks }: RadioCardGroupProps) {
-  const setSelectedDeck = useSelectedDeck((state) => state.setDeck);
-  const deckNameOptions = decks.map((deck) => deck.name);
+  const setDeck = useSelectedDeck((state) => state.setDeck);
 
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: 'decks',
     defaultValue: 'react',
-    onChange: (selectedDeck) =>
-      setSelectedDeck(decks.find((d) => d.name === selectedDeck)!),
+    onChange: (selectedDeck) => {
+      setDeck(decks.find((d) => d.name === selectedDeck)!);
+    },
   });
 
   const group = getRootProps();
 
   return (
     <VStack {...group} align='left'>
-      {deckNameOptions.map((value) => {
+      {decks.map((deck) => {
+        let value = deck.name;
         const radio = getRadioProps({ value });
         return (
-          <RadioCard key={value} {...radio}>
+          <RadioCard key={value} deck={deck} {...radio}>
             <Text isTruncated>{value}</Text>
           </RadioCard>
         );

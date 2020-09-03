@@ -3,13 +3,13 @@ import { Deck } from '../types/card';
 
 interface DeckValues {
   currentDeck: Deck | null;
-  setDeck: (newDeck: Deck) => void;
+  setDeck: (newDeck: Deck | null) => void;
 }
 
 const useSelectedDeck = create<DeckValues>(
   (set): DeckValues => ({
     currentDeck: null,
-    setDeck: (newDeck: Deck) => {
+    setDeck: (newDeck: Deck | null) => {
       set({ currentDeck: newDeck });
     },
   })

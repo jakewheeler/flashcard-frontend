@@ -56,6 +56,21 @@ export async function getDecks(token: string, id: string) {
   throw new Error(response.statusText);
 }
 
+export async function deleteDeck(token: string, deck: Deck) {
+  const response = await axios.delete<void>(
+    `/categories/${deck.categoryId}/decks/${deck.id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
 export async function getCards(token: string, deck: Deck) {
   const response = await axios.get<Card[]>(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards`,
