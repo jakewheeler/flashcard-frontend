@@ -18,8 +18,8 @@ import {
   IconButton,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { useDecks, useCards, useCategories, useAllUserDecks } from '../hooks';
-import { Category, Deck } from '../types/card';
+import { useCards, useAllUserDecks, useCategory } from '../hooks';
+import { Deck, DecksByCategoryObj } from '../types/card';
 import useSelectedDeck from '../stores/deck';
 import CardTemplate, {
   ResponsiveCardLayout,
@@ -121,24 +121,60 @@ function MenuSection() {
 }
 
 function ViewByCategory() {
-  const { isLoading, error, isError, data } = useCategories();
+  const setDeck = useSelectedDeck((state) => state.setDeck);
+  const { isLoading, error, isError, data } = useAllUserDecks();
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: 'decks',
+    defaultValue: 'react',
+    onChange: (selectedDeck) => {
+      setDeck(combineAllDecks(data!).find((d) => d.name === selectedDeck)!);
+    },
+  });
+
+  const group = getRootProps();
 
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
   }
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return <span>Loading...</span>;
   }
 
   return (
     <>
-      {data?.map((category) => (
-        <CollapsibleCategory key={category.id} category={category} />
+      {Object.keys(data).map((categoryId) => (
+        // each category has its own collapsible
+        <CollapsibleCategory key={categoryId} categoryId={categoryId}>
+          <VStack {...group} align='left'>
+            {data[categoryId].map((deckInCategory: Deck) => {
+              const value = deckInCategory.name;
+              const radio = getRadioProps({ value });
+              return (
+                <RadioCard
+                  key={deckInCategory.id}
+                  deck={deckInCategory}
+                  {...radio}
+                >
+                  <Text isTruncated>{value}</Text>
+                </RadioCard>
+              );
+            })}
+          </VStack>
+        </CollapsibleCategory>
       ))}
     </>
   );
 }
+
+const combineAllDecks = (data: DecksByCategoryObj) => {
+  let decks: Deck[] = [];
+  Object.keys(data).forEach((key) => {
+    decks = decks.concat(data[key]);
+  });
+  return decks;
+};
 
 function ViewByDeck() {
   const { isLoading, error, isError, data } = useAllUserDecks();
@@ -146,20 +182,27 @@ function ViewByDeck() {
     return <span>Error: {(error as Error).message}</span>;
   }
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return <span>Loading...</span>;
   }
 
   return (
     <>
-      <RadioCardGroup decks={data!} />
+      <RadioCardGroup decks={combineAllDecks(data)} />
     </>
   );
 }
 
 // Category that will display the deck radio button group under it
-function CollapsibleCategory({ category }: { category: Category }) {
-  const { isLoading, error, isError, data } = useDecks(category.id);
+function CollapsibleCategory({
+  categoryId,
+  children,
+}: {
+  categoryId: string;
+  children: React.ReactNode;
+}) {
+  const { isLoading, error, isError, data: category } = useCategory(categoryId);
+
   const [show, setShow] = React.useState<boolean>(false);
 
   const handleToggle = () => setShow(!show);
@@ -168,7 +211,7 @@ function CollapsibleCategory({ category }: { category: Category }) {
     return <span>Error: {(error as Error).message}</span>;
   }
 
-  if (isLoading) {
+  if (isLoading || !category) {
     return <Spinner color='white' />;
   }
 
@@ -178,9 +221,7 @@ function CollapsibleCategory({ category }: { category: Category }) {
         <Text isTruncated> {category.name}</Text>
       </Button>
       <Collapse mt={4} isOpen={show}>
-        <Box ml={10}>
-          <RadioCardGroup decks={data!} />
-        </Box>
+        <Box ml={10}>{children}</Box>
       </Collapse>
     </>
   );

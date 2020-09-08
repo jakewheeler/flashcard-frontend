@@ -9,7 +9,7 @@ import {
 import useStore from '../stores/user';
 import { Deck } from '../types/card';
 import { useEffect } from 'react';
-import { getDecodedJwt } from '../utils';
+import { tryFetchLoggedInUser } from '../api/login-service';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
@@ -49,8 +49,7 @@ export function useStoredUser() {
     async function authCheck() {
       if (token) {
         try {
-          await getCategories(token);
-          let user = getDecodedJwt(token).username;
+          let user = await tryFetchLoggedInUser(token);
           setUser(user, token);
         } catch (err) {
           console.error('Existing token is not valid');
