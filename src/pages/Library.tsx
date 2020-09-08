@@ -16,6 +16,9 @@ import {
   Spinner,
   Heading,
   IconButton,
+  InputGroup,
+  Input,
+  InputRightElement,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { useCards, useAllUserDecks, useCategory } from '../hooks';
@@ -236,6 +239,7 @@ function RadioCard(props: CustomRadioBtnProps) {
   const { getInputProps, getCheckboxProps } = useRadio(props);
   const { deck } = props;
   const { currentDeck, setDeck } = useSelectedDeck();
+  const [isEditing, setIsEditing] = useState(false);
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
@@ -279,17 +283,41 @@ function RadioCard(props: CustomRadioBtnProps) {
         py={3}
       >
         <HStack justifyContent='space-between'>
-          {props.children}
+          {isEditing ? <EditDeckInput /> : props.children}
           {currentDeck?.name === deck.name && (
-            <IconButton
-              aria-label={`delete ${props.deck?.name}`}
-              icon={<DeleteIcon />}
-              onClick={deletion}
-            />
+            <HStack>
+              <IconButton
+                colorScheme='black'
+                aria-label={`edit ${props.deck?.name}`}
+                icon={<EditIcon />}
+                onClick={() => setIsEditing(!isEditing)}
+              />
+              <IconButton
+                colorScheme='black'
+                aria-label={`delete ${props.deck?.name}`}
+                icon={<DeleteIcon />}
+                onClick={deletion}
+              />
+            </HStack>
           )}
         </HStack>
       </Box>
     </Box>
+  );
+}
+
+function EditDeckInput() {
+  const handleClick = () => console.log('editing');
+
+  return (
+    <InputGroup size='md'>
+      <Input pr='4.5rem' placeholder='Edit deck name' />
+      <InputRightElement width='4.5rem'>
+        <Button size='sm' onClick={handleClick}>
+          Submit
+        </Button>
+      </InputRightElement>
+    </InputGroup>
   );
 }
 

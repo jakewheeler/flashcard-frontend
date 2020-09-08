@@ -109,17 +109,6 @@ export function CardStructure({ children, card }: CardStructureProps) {
     >
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
-          {/* <CardFormPopover
-            trigger={
-              <IconButton
-                aria-label='Edit'
-                colorScheme='teal'
-                icon={<EditIcon />}
-                onClick={() => console.log('edit', cardUrl)}
-              />
-            }
-          /> */}
-
           <IconButton
             aria-label='Delete'
             colorScheme='teal'
