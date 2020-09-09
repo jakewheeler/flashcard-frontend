@@ -1,4 +1,9 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, {
+  useState,
+  ChangeEvent,
+  MutableRefObject,
+  RefObject,
+} from 'react';
 import { useAllUserDecks, useCategory } from '../hooks/index';
 import useSelectedDeck from '../stores/deck';
 import {
@@ -19,6 +24,16 @@ import {
   Input,
   InputRightElement,
   UseRadioProps,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  ModalFooter,
 } from '@chakra-ui/core';
 import { StringOrNumber } from '@chakra-ui/utils';
 import { Deck, EditDeckInputObj } from '../types/deck';
@@ -104,11 +119,14 @@ function ViewByCategory({ group, getRadioProps }: ViewByProps) {
       {Object.keys(data).map((categoryId) => (
         // each category has its own collapsible
         <CollapsibleCategory key={categoryId} categoryId={categoryId}>
-          <RadioCardGroup
-            group={group}
-            decks={data[categoryId]}
-            getRadioProps={getRadioProps}
-          />
+          <VStack spacing={2} align='left'>
+            <AddDeckModal categoryId={categoryId} />
+            <RadioCardGroup
+              group={group}
+              decks={data[categoryId]}
+              getRadioProps={getRadioProps}
+            />
+          </VStack>
         </CollapsibleCategory>
       ))}
     </>
@@ -326,6 +344,52 @@ function EditDeckInput({ currentDeckName, handleEdit }: EditDeckInputProps) {
         </InputRightElement>
       </InputGroup>
     </form>
+  );
+}
+
+type AddDeckModalProps = {
+  categoryId: string;
+};
+
+function AddDeckModal({ categoryId }: AddDeckModalProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { data: category } = useCategory(categoryId);
+
+  const initialRef = React.useRef<HTMLInputElement>(null);
+
+  return (
+    <>
+      <Button colorScheme='teal' onClick={onOpen}>
+        Add Deck
+      </Button>
+      <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>Create a new deck</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody pb={6}>
+              <VStack spacing={2}>
+                <FormControl>
+                  <FormLabel>Deck name</FormLabel>
+                  <Input ref={initialRef} placeholder='enter the deck name' />
+                </FormControl>
+                <Text>
+                  This deck will be added to{' '}
+                  <span style={{ fontWeight: 'bold' }}>{category?.name}</span>
+                </Text>
+              </VStack>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme='teal' mr={3}>
+                Save
+              </Button>
+              <Button onClick={onClose}>Cancel</Button>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
+    </>
   );
 }
 
