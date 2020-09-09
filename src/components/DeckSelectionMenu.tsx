@@ -1,9 +1,4 @@
-import React, {
-  useState,
-  ChangeEvent,
-  MutableRefObject,
-  RefObject,
-} from 'react';
+import React, { useState, ChangeEvent, RefObject } from 'react';
 import { useAllUserDecks, useCategory } from '../hooks/index';
 import useSelectedDeck from '../stores/deck';
 import {
@@ -39,7 +34,7 @@ import { StringOrNumber } from '@chakra-ui/utils';
 import { Deck, EditDeckInputObj } from '../types/deck';
 import useStore from '../stores/user';
 import { useMutation, queryCache } from 'react-query';
-import { deleteDeck, editDeck } from '../api/card-service';
+import { deleteDeck, editDeck, createDeck } from '../api/card-service';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import { useDeckRadioGroup } from '../hooks';
@@ -351,11 +346,33 @@ type AddDeckModalProps = {
   categoryId: string;
 };
 
+type AddDeckInputObj = {
+  name: string;
+};
+
 function AddDeckModal({ categoryId }: AddDeckModalProps) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: category } = useCategory(categoryId);
+  const token = useStore((state) => state.token);
+  const { register, handleSubmit } = useForm<AddDeckInputObj>();
 
-  const initialRef = React.useRef<HTMLInputElement>(null);
+  const initialRef = React.useRef<HTMLInputElement | null>(null);
+
+  const cacheKey = `${token}/categories/all/decks`;
+  const [addDeck] = useMutation(createDeck, {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+  });
+
+  const onSubmit = async (deck: AddDeckInputObj) => {
+    const { name } = deck;
+    try {
+      await addDeck({ token, categoryId, name });
+      onClose();
+    } catch (err) {
+      console.error(`Could not add deck: ${deck.name}`);
+      console.error(err);
+    }
+  };
 
   return (
     <>
@@ -364,29 +381,41 @@ function AddDeckModal({ categoryId }: AddDeckModalProps) {
       </Button>
       <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay>
-          <ModalContent>
-            <ModalHeader>Create a new deck</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody pb={6}>
-              <VStack spacing={2}>
-                <FormControl>
-                  <FormLabel>Deck name</FormLabel>
-                  <Input ref={initialRef} placeholder='enter the deck name' />
-                </FormControl>
-                <Text>
-                  This deck will be added to{' '}
-                  <span style={{ fontWeight: 'bold' }}>{category?.name}</span>
-                </Text>
-              </VStack>
-            </ModalBody>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalContent>
+              <ModalHeader>Create a new deck</ModalHeader>
+              <ModalCloseButton />
 
-            <ModalFooter>
-              <Button colorScheme='teal' mr={3}>
-                Save
-              </Button>
-              <Button onClick={onClose}>Cancel</Button>
-            </ModalFooter>
-          </ModalContent>
+              <ModalBody pb={6}>
+                <VStack spacing={2}>
+                  <FormControl>
+                    <FormLabel>Deck name</FormLabel>
+                    <Input
+                      name='name'
+                      ref={(ref) => {
+                        if (ref) {
+                          initialRef.current = ref;
+                          register(ref);
+                        }
+                      }}
+                      placeholder='enter the deck name'
+                    />
+                  </FormControl>
+                  <Text>
+                    This deck will be added to{' '}
+                    <span style={{ fontWeight: 'bold' }}>{category?.name}</span>
+                  </Text>
+                </VStack>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button colorScheme='teal' mr={3} type='submit'>
+                  Save
+                </Button>
+                <Button onClick={onClose}>Cancel</Button>
+              </ModalFooter>
+            </ModalContent>
+          </form>
         </ModalOverlay>
       </Modal>
     </>

@@ -103,6 +103,31 @@ export async function editDeck({ token, deck, newName }: EditDeckProps) {
   throw new Error(response.statusText);
 }
 
+type CreateDeckProps = {
+  token: string;
+  categoryId: string;
+  name: string;
+};
+
+export async function createDeck({ token, categoryId, name }: CreateDeckProps) {
+  const body = {
+    name,
+  };
+  const response = await axios.post<Deck>(
+    `/categories/${categoryId}/decks`,
+    body,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
 export async function getCards(token: string, deck: Deck) {
   const response = await axios.get<Card[]>(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards`,
