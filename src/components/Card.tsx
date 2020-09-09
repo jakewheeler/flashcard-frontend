@@ -18,9 +18,6 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  FormControl,
-  Input,
-  ModalFooter,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
@@ -29,13 +26,7 @@ import useSelectedDeck from '../stores/deck';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import {
-  createCard,
-  deleteCard,
-  editCard,
-  createDeck,
-} from '../api/card-service';
-import { useCategory } from '../hooks';
+import { createCard, deleteCard, editCard } from '../api/card-service';
 
 type CardProps = {
   card: Card;
