@@ -154,9 +154,10 @@ export function ResponsiveCardLayout({ children }: ResponsiveCardLayoutProps) {
 
 type CardFormProps = ModifyCardFormProps & {
   onSubmit: (card: CreateCardType, e: any) => Promise<void>;
+  card?: Card;
 };
 
-function CardForm({ onCancel, onSubmit }: CardFormProps) {
+function CardForm({ onCancel, onSubmit, card }: CardFormProps) {
   const { handleSubmit, register, formState, reset, errors } = useForm<
     CreateCardType
   >();
@@ -164,13 +165,28 @@ function CardForm({ onCancel, onSubmit }: CardFormProps) {
     <VStack spacing={4} color='teal.900' align='left'>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormLabel color='white'>Description</FormLabel>
-        <Textarea name='front' type='text' ref={register({ required: true })} />
+        <Textarea
+          name='front'
+          defaultValue={card ? card.front : ''}
+          type='text'
+          ref={register({ required: true })}
+        />
         {errors.front && <Text color='red.900'>Description is required</Text>}
         <FormLabel color='white'>Answer</FormLabel>
-        <Textarea type='text' name='back' ref={register({ required: true })} />
+        <Textarea
+          type='text'
+          defaultValue={card ? card.back : ''}
+          name='back'
+          ref={register({ required: true })}
+        />
         {errors.back && <Text color='red.900'>Answer is required</Text>}
         <FormLabel color='white'>Type</FormLabel>
-        <Textarea type='text' name='type' ref={register({ required: true })} />
+        <Textarea
+          type='text'
+          defaultValue={card ? card.type : ''}
+          name='type'
+          ref={register({ required: true })}
+        />
         {errors.type && <Text color='red.900'>Type is required</Text>}
         <HStack justifyContent='flex-start' mt={5}>
           <Button
@@ -291,7 +307,7 @@ function EditCardModal({ card }: EditCardModalProps) {
             <ModalCloseButton />
 
             <ModalBody pb={6}>
-              <CardForm onCancel={onClose} onSubmit={onSubmit} />
+              <CardForm onCancel={onClose} onSubmit={onSubmit} card={card} />
             </ModalBody>
           </ModalContent>
         </ModalOverlay>
