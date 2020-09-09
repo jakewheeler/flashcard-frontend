@@ -10,11 +10,6 @@ export interface Deck {
   name: string;
 }
 
-interface DecksByCategory {
-  key: string;
-  value: Deck[];
-}
-
 export interface DecksByCategoryObj {
   [key: string]: Deck[];
 }

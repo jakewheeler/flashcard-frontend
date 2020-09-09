@@ -298,7 +298,7 @@ function RadioCard(props: CustomRadioBtnProps) {
         py={3}
       >
         <HStack justifyContent='space-between'>
-          {isEditing && currentDeck ? (
+          {isEditing && currentDeck?.name === deck.name ? (
             <EditDeckInput
               currentDeckName={currentDeck.name}
               handleEdit={edit}
