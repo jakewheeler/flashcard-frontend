@@ -33,9 +33,12 @@ export async function getCategories(token: string): Promise<Category[]> {
 }
 
 export async function getAllUserDecks(token: string) {
-  const response = await axios.get<DecksByCategoryObj>(`/categories/all/decks`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await axios.get<DecksByCategoryObj>(
+    `/categories/all/decks`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
 
   if (response.status === 200) {
     return response.data;
@@ -56,9 +59,37 @@ export async function getDecks(token: string, id: string) {
   throw new Error(response.statusText);
 }
 
-export async function deleteDeck(token: string, deck: Deck) {
+type DeleteDeckProps = {
+  token: string;
+  deck: Deck;
+};
+
+export async function deleteDeck({ token, deck }: DeleteDeckProps) {
   const response = await axios.delete<void>(
     `/categories/${deck.categoryId}/decks/${deck.id}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
+type EditDeckProps = DeleteDeckProps & {
+  newName: string;
+};
+
+export async function editDeck({ token, deck, newName }: EditDeckProps) {
+  const body = {
+    name: newName,
+  };
+  const response = await axios.patch<Deck>(
+    `/categories/${deck.categoryId}/decks/${deck.id}`,
+    body,
     {
       headers: { Authorization: `Bearer ${token}` },
     }

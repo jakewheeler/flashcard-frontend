@@ -29,8 +29,9 @@ import CardTemplate, {
   CreateCardCollapsible,
 } from '../components/Card';
 import { useMutation, queryCache } from 'react-query';
-import { deleteDeck } from '../api/card-service';
+import { deleteDeck, editDeck } from '../api/card-service';
 import useStore from '../stores/user';
+import { useForm } from 'react-hook-form';
 // import { useHistory } from 'react-router-dom';
 
 export default function Library() {
@@ -248,14 +249,28 @@ function RadioCard(props: CustomRadioBtnProps) {
 
   const cacheKey = `${token}/categories/all/decks`;
 
-  const [mutate] = useMutation(() => deleteDeck(token, deck), {
+  const [deleteSelectedDeck] = useMutation(deleteDeck, {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+  });
+
+  const [editSelectedDeck] = useMutation(editDeck, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
 
   const deletion = async () => {
     try {
-      await mutate();
+      await deleteSelectedDeck({ token, deck });
       setDeck(null);
+    } catch (err) {
+      console.error(`Could not delete deck: ${deck.name}`);
+      console.error(err);
+    }
+  };
+
+  const edit = async (newName: string) => {
+    try {
+      await editSelectedDeck({ token, deck, newName });
+      setIsEditing(false);
     } catch (err) {
       console.error(`Could not delete deck: ${deck.name}`);
       console.error(err);
@@ -283,7 +298,14 @@ function RadioCard(props: CustomRadioBtnProps) {
         py={3}
       >
         <HStack justifyContent='space-between'>
-          {isEditing ? <EditDeckInput /> : props.children}
+          {isEditing && currentDeck ? (
+            <EditDeckInput
+              currentDeckName={currentDeck.name}
+              handleEdit={edit}
+            />
+          ) : (
+            props.children
+          )}
           {currentDeck?.name === deck.name && (
             <HStack>
               <IconButton
@@ -306,18 +328,39 @@ function RadioCard(props: CustomRadioBtnProps) {
   );
 }
 
-function EditDeckInput() {
-  const handleClick = () => console.log('editing');
+type EditDeckProps = {
+  currentDeckName: string;
+  handleEdit: (newName: string) => Promise<void>;
+};
+
+interface EditDeckInput {
+  newName: string;
+}
+
+function EditDeckInput({ currentDeckName, handleEdit }: EditDeckProps) {
+  const { register, handleSubmit } = useForm<EditDeckInput>();
+
+  const onSubmit = async (input: EditDeckInput) => {
+    await handleEdit(input.newName);
+  };
 
   return (
-    <InputGroup size='md'>
-      <Input pr='4.5rem' placeholder='Edit deck name' />
-      <InputRightElement width='4.5rem'>
-        <Button size='sm' onClick={handleClick}>
-          Submit
-        </Button>
-      </InputRightElement>
-    </InputGroup>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <InputGroup size='md'>
+        <Input
+          name='newName'
+          pr='4.5rem'
+          placeholder={currentDeckName}
+          textColor='black'
+          ref={register}
+        />
+        <InputRightElement width='4.5rem'>
+          <Button h='1.75rem' size='sm' type='submit' colorScheme='teal'>
+            OK
+          </Button>
+        </InputRightElement>
+      </InputGroup>
+    </form>
   );
 }
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import Library from './pages/Library';
-import './App.css';
 import { ChakraProvider, CSSReset } from '@chakra-ui/core';
 import Layout from './components/Layout';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
