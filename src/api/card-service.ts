@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Category, Card } from '../types/card';
+import { Category, Card, CreateCardType } from '../types/card';
 import { Deck, DecksByCategoryObj } from '../types/deck';
 
 export async function getCategory(
@@ -143,12 +143,6 @@ export async function getCards(token: string, deck: Deck) {
   throw new Error(response.statusText);
 }
 
-export type CreateCardType = {
-  front: string;
-  back: string;
-  type: string;
-};
-
 export async function createCard(
   token: string,
   deck: Deck,
@@ -174,12 +168,20 @@ export async function createCard(
   throw new Error(response.statusText);
 }
 
-export async function editCard(
-  token: string,
-  deck: Deck,
-  card: Card,
-  { front, back, type }: CreateCardType
-) {
+type EditCardType = {
+  token: string;
+  deck: Deck;
+  card: Card;
+  editedProperties: CreateCardType;
+};
+
+export async function editCard({
+  token,
+  deck,
+  card,
+  editedProperties,
+}: EditCardType) {
+  const { front, back, type } = editedProperties;
   const body: CreateCardType = { front, back, type };
 
   const response = await axios.patch<Card>(
@@ -190,7 +192,7 @@ export async function editCard(
     }
   );
 
-  if (response.status === 201) {
+  if (response.status === 200) {
     return response.data;
   }
 

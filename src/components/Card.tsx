@@ -14,17 +14,12 @@ import {
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
-import { Card } from '../types/card';
+import { Card, CreateCardType } from '../types/card';
 import useSelectedDeck from '../stores/deck';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import {
-  createCard,
-  CreateCardType,
-  deleteCard,
-  editCard,
-} from '../api/card-service';
+import { createCard, deleteCard, editCard } from '../api/card-service';
 
 type CardProps = {
   card: Card;
@@ -91,6 +86,10 @@ export function CardStructure({ children, card }: CardStructureProps) {
   const [deleteMutation] = useMutation(deleteCard, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
+
+  const [editMutation] = useMutation(editCard, {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+  });
   if (!deck) return <Box className='no-deck-cards'></Box>;
 
   return (
@@ -105,10 +104,36 @@ export function CardStructure({ children, card }: CardStructureProps) {
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
           <IconButton
+            aria-label='Edit'
+            colorScheme='teal'
+            icon={<EditIcon />}
+            onClick={async () => {
+              try {
+                const editedProperties = {
+                  front: 'hoi',
+                  back: 'hi',
+                  type: 'hello',
+                };
+
+                await editMutation({ token, deck, card, editedProperties });
+              } catch (err) {
+                console.error(`Cannot edit card`);
+                console.error(err);
+              }
+            }}
+          />
+          <IconButton
             aria-label='Delete'
             colorScheme='teal'
             icon={<DeleteIcon />}
-            onClick={async () => deleteMutation({ token, deck, card })}
+            onClick={async () => {
+              try {
+                await deleteMutation({ token, deck, card });
+              } catch (err) {
+                console.error(`Cannot delete card`);
+                console.error(err);
+              }
+            }}
           />
         </HStack>
       </Flex>

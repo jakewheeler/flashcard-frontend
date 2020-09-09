@@ -11,3 +11,9 @@ export interface Card {
   orderInDeck: number;
   type: string;
 }
+
+export type CreateCardType = {
+  front: string;
+  back: string;
+  type: string;
+};
