@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import {
   Box,
   Flex,
@@ -20,6 +20,7 @@ import {
   Input,
   InputRightElement,
 } from '@chakra-ui/core';
+import { StringOrNumber } from '@chakra-ui/utils';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import { useCards, useAllUserDecks, useCategory } from '../hooks';
 import { Deck, DecksByCategoryObj } from '../types/card';
@@ -91,6 +92,26 @@ function CardView({ deck }: CardPanelProps) {
 
 function MenuSection() {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
+  const setDeck = useSelectedDeck((state) => state.setDeck);
+  const { isLoading, error, isError, data } = useAllUserDecks();
+
+  const { getRootProps, getRadioProps } = useRadioGroup({
+    name: 'decks',
+    defaultValue: 'react',
+    onChange: (selectedDeck) => {
+      setDeck(combineAllDecks(data!).find((d) => d.name === selectedDeck)!);
+    },
+  });
+
+  const group = getRootProps();
+
+  if (isError) {
+    return <span>Error: {(error as Error).message}</span>;
+  }
+
+  if (isLoading || !data) {
+    return <span>Loading...</span>;
+  }
 
   return (
     <Box minH='100vh' minW='500px' maxW='500px' bgColor='teal.400'>
@@ -118,25 +139,60 @@ function MenuSection() {
         </RadioGroup>
       </VStack>
       <VStack align='left' paddingTop={5} mr={5} ml={5}>
-        {viewByValue === 'category' ? <ViewByCategory /> : <ViewByDeck />}
+        {viewByValue === 'category' ? (
+          <ViewByCategory group={group} getRadioProps={getRadioProps} />
+        ) : (
+          <ViewByDeck group={group} getRadioProps={getRadioProps} />
+        )}
       </VStack>
     </Box>
   );
 }
 
-function ViewByCategory() {
-  const setDeck = useSelectedDeck((state) => state.setDeck);
+type TestRadioCardGroupProps = ViewByProps & {
+  decks: Deck[];
+};
+
+function TestRadCardGroup({
+  group,
+  decks,
+  getRadioProps,
+}: TestRadioCardGroupProps) {
+  return (
+    <VStack {...group} align='left'>
+      {decks.map((deckInCategory: Deck) => {
+        const value = deckInCategory.name;
+        const radio = getRadioProps({ value });
+        return (
+          <RadioCard key={deckInCategory.id} deck={deckInCategory} {...radio}>
+            <Text isTruncated>{value}</Text>
+          </RadioCard>
+        );
+      })}
+    </VStack>
+  );
+}
+
+type ViewByProps = {
+  group: {
+    ref: (value: any) => void;
+    role: string;
+  };
+  getRadioProps: (
+    props?: Record<string, any> | undefined,
+    ref?: ((instance: any) => void) | React.RefObject<any> | null | undefined
+  ) => {
+    [x: string]: any;
+    ref: React.Ref<any>;
+    name: string;
+    onChange: (
+      eventOrValue: ChangeEvent<HTMLInputElement> | StringOrNumber
+    ) => void;
+  };
+};
+
+function ViewByCategory({ group, getRadioProps }: ViewByProps) {
   const { isLoading, error, isError, data } = useAllUserDecks();
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: 'decks',
-    defaultValue: 'react',
-    onChange: (selectedDeck) => {
-      setDeck(combineAllDecks(data!).find((d) => d.name === selectedDeck)!);
-    },
-  });
-
-  const group = getRootProps();
 
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
@@ -151,21 +207,11 @@ function ViewByCategory() {
       {Object.keys(data).map((categoryId) => (
         // each category has its own collapsible
         <CollapsibleCategory key={categoryId} categoryId={categoryId}>
-          <VStack {...group} align='left'>
-            {data[categoryId].map((deckInCategory: Deck) => {
-              const value = deckInCategory.name;
-              const radio = getRadioProps({ value });
-              return (
-                <RadioCard
-                  key={deckInCategory.id}
-                  deck={deckInCategory}
-                  {...radio}
-                >
-                  <Text isTruncated>{value}</Text>
-                </RadioCard>
-              );
-            })}
-          </VStack>
+          <TestRadCardGroup
+            group={group}
+            decks={data[categoryId]}
+            getRadioProps={getRadioProps}
+          />
         </CollapsibleCategory>
       ))}
     </>
@@ -180,8 +226,9 @@ const combineAllDecks = (data: DecksByCategoryObj) => {
   return decks;
 };
 
-function ViewByDeck() {
+function ViewByDeck({ group, getRadioProps }: ViewByProps) {
   const { isLoading, error, isError, data } = useAllUserDecks();
+
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
   }
@@ -192,7 +239,11 @@ function ViewByDeck() {
 
   return (
     <>
-      <RadioCardGroup decks={combineAllDecks(data)} />
+      <TestRadCardGroup
+        group={group}
+        decks={combineAllDecks(data)}
+        getRadioProps={getRadioProps}
+      />
     </>
   );
 }
@@ -361,37 +412,5 @@ function EditDeckInput({ currentDeckName, handleEdit }: EditDeckProps) {
         </InputRightElement>
       </InputGroup>
     </form>
-  );
-}
-
-type RadioCardGroupProps = {
-  decks: Deck[];
-};
-
-function RadioCardGroup({ decks }: RadioCardGroupProps) {
-  const setDeck = useSelectedDeck((state) => state.setDeck);
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: 'decks',
-    defaultValue: 'react',
-    onChange: (selectedDeck) => {
-      setDeck(decks.find((d) => d.name === selectedDeck)!);
-    },
-  });
-
-  const group = getRootProps();
-
-  return (
-    <VStack {...group} align='left'>
-      {decks.map((deck) => {
-        let value = deck.name;
-        const radio = getRadioProps({ value });
-        return (
-          <RadioCard key={value} deck={deck} {...radio}>
-            <Text isTruncated>{value}</Text>
-          </RadioCard>
-        );
-      })}
-    </VStack>
   );
 }
