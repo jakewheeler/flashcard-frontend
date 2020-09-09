@@ -1,3 +1,22 @@
+# Flashy Cards - Frontend
+
+This repository contains the frontend for the Flashy Cards project.
+
+## Tech
+
+Some of the technologies used include:
+
+- Create React App
+- react-query
+- Zustand
+- TypeScript
+- Axios
+- react-hook-form
+- react-card-flip
+- Chakra UI
+
+## CRA
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
