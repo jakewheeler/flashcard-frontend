@@ -2,7 +2,6 @@ import React, { useState, ChangeEvent } from 'react';
 import { useAllUserDecks, useCategory } from '../hooks/index';
 import useSelectedDeck from '../stores/deck';
 import {
-  useRadioGroup,
   Box,
   Heading,
   VStack,
@@ -28,29 +27,12 @@ import { useMutation, queryCache } from 'react-query';
 import { deleteDeck, editDeck } from '../api/card-service';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
+import { useCustomDeckGroup } from '../hooks';
+import { combineAllDecks } from '../utils';
 
 function DeckSelectionMenu() {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
-  const setDeck = useSelectedDeck((state) => state.setDeck);
-  const { isLoading, error, isError, data } = useAllUserDecks();
-
-  const { getRootProps, getRadioProps } = useRadioGroup({
-    name: 'decks',
-    defaultValue: 'react',
-    onChange: (selectedDeck) => {
-      setDeck(combineAllDecks(data!).find((d) => d.name === selectedDeck)!);
-    },
-  });
-
-  const group = getRootProps();
-
-  if (isError) {
-    return <span>Error: {(error as Error).message}</span>;
-  }
-
-  if (isLoading || !data) {
-    return <span>Loading...</span>;
-  }
+  const { group, getRadioProps } = useCustomDeckGroup();
 
   return (
     <Box minH='100vh' minW='500px' maxW='500px' bgColor='teal.400'>
@@ -339,13 +321,5 @@ function EditDeckInput({ currentDeckName, handleEdit }: EditDeckInputProps) {
     </form>
   );
 }
-
-const combineAllDecks = (data: DecksByCategoryObj) => {
-  let decks: Deck[] = [];
-  Object.keys(data).forEach((key) => {
-    decks = decks.concat(data[key]);
-  });
-  return decks;
-};
 
 export default DeckSelectionMenu;
