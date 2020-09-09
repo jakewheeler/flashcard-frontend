@@ -11,6 +11,16 @@ import {
   Textarea,
   VStack,
   Collapse,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  Input,
+  ModalFooter,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
@@ -19,7 +29,13 @@ import useSelectedDeck from '../stores/deck';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import { createCard, deleteCard, editCard } from '../api/card-service';
+import {
+  createCard,
+  deleteCard,
+  editCard,
+  createDeck,
+} from '../api/card-service';
+import { useCategory } from '../hooks';
 
 type CardProps = {
   card: Card;
@@ -76,10 +92,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
   const deck = useSelectedDeck((state) => state.currentDeck);
   const token = useStore((state) => state.token);
 
-  let cardUrl: string = deck
-    ? `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`
-    : '';
-  let cacheKey: string = deck
+  const cacheKey = deck
     ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
     : '';
 
@@ -87,9 +100,6 @@ export function CardStructure({ children, card }: CardStructureProps) {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
 
-  const [editMutation] = useMutation(editCard, {
-    onSuccess: () => queryCache.invalidateQueries(cacheKey),
-  });
   if (!deck) return <Box className='no-deck-cards'></Box>;
 
   return (
@@ -103,25 +113,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
     >
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
-          <IconButton
-            aria-label='Edit'
-            colorScheme='teal'
-            icon={<EditIcon />}
-            onClick={async () => {
-              try {
-                const editedProperties = {
-                  front: 'hoi',
-                  back: 'hi',
-                  type: 'hello',
-                };
-
-                await editMutation({ token, deck, card, editedProperties });
-              } catch (err) {
-                console.error(`Cannot edit card`);
-                console.error(err);
-              }
-            }}
-          />
+          <EditCardModal card={card} />
           <IconButton
             aria-label='Delete'
             colorScheme='teal'
@@ -234,38 +226,6 @@ function AddCardForm({ onCancel }: ModifyCardFormProps) {
 
   return <CardForm onCancel={onCancel} onSubmit={onSubmit} />;
 }
-// function EditCardForm({ firstFieldRef, onCancel }: ModifyCardFormProps) {
-//   const token = useStore((state) => state.token);
-//   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
-//   const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
-//     selectedDeck!.id
-//   }/cards`;
-//   const { reset } = useForm();
-//   const [mutate] = useMutation(
-//     (formData: CreateCardType) => {
-//       return editCard(token, selectedDeck!, formData);
-//     },
-//     { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
-//   );
-
-//   const onSubmit = async (card: CreateCardType) => {
-//     try {
-//       await mutate(card);
-//       reset();
-//       onCancel();
-//     } catch (e) {
-//       console.error(`Could not add new card to ${selectedDeck!.name}`);
-//     }
-//   };
-
-//   return (
-//     <CardForm
-//       firstFieldRef={firstFieldRef}
-//       onCancel={onCancel}
-//       onSubmit={onSubmit}
-//     />
-//   );
-// }
 
 export function CreateCardCollapsible() {
   const [show, setShow] = React.useState(false);
@@ -281,5 +241,61 @@ export function CreateCardCollapsible() {
         <AddCardForm onCancel={handleToggle} />
       </Collapse>
     </Box>
+  );
+}
+
+type EditCardModalProps = {
+  card: Card;
+};
+
+function EditCardModal({ card }: EditCardModalProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const token = useStore((state) => state.token);
+  const deck = useSelectedDeck((state) => state.currentDeck);
+
+  const initialRef = React.useRef<HTMLInputElement | null>(null);
+
+  const cacheKey = deck
+    ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
+    : '';
+  const [editMutation] = useMutation(editCard, {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+  });
+
+  if (!deck || !card) {
+    return <Box></Box>;
+  }
+
+  const onSubmit = async (editedProperties: CreateCardType) => {
+    try {
+      await editMutation({ token, deck, card, editedProperties });
+      onClose();
+    } catch (err) {
+      console.error(`Cannot edit card`);
+      console.error(err);
+    }
+  };
+
+  return (
+    <>
+      <IconButton
+        aria-label='Edit'
+        colorScheme='teal'
+        icon={<EditIcon />}
+        onClick={onOpen}
+      />
+      <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>Edit card</ModalHeader>
+            <ModalCloseButton />
+
+            <ModalBody pb={6}>
+              <CardForm onCancel={onClose} onSubmit={onSubmit} />
+            </ModalBody>
+          </ModalContent>
+        </ModalOverlay>
+      </Modal>
+    </>
   );
 }
