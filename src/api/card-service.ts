@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { Category, Deck, Card, DecksByCategoryObj } from '../types/card';
+import { Category, Card } from '../types/card';
+import { Deck, DecksByCategoryObj } from '../types/deck';
 
 export async function getCategory(
   token: string,

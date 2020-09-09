@@ -4,16 +4,6 @@ export interface Category {
   userId: number;
 }
 
-export interface Deck {
-  id: number;
-  categoryId: number;
-  name: string;
-}
-
-export interface DecksByCategoryObj {
-  [key: string]: Deck[];
-}
-
 export interface Card {
   id: number;
   front: string;

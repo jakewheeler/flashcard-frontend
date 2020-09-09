@@ -7,7 +7,7 @@ import {
   getCategory,
 } from '../api/card-service';
 import useStore from '../stores/user';
-import { Deck } from '../types/card';
+import { Deck } from '../types/deck';
 import { useEffect } from 'react';
 import { tryFetchLoggedInUser } from '../api/login-service';
 
