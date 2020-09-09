@@ -197,11 +197,17 @@ export async function editCard(
   throw new Error(response.statusText);
 }
 
-export async function deleteCard(
-  token: string,
-  deck: Deck,
-  card: Card
-): Promise<void> {
+type DeleteCardType = {
+  token: string;
+  deck: Deck;
+  card: Card;
+};
+
+export async function deleteCard({
+  token,
+  deck,
+  card,
+}: DeleteCardType): Promise<void> {
   await axios.delete(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`,
     {

@@ -88,7 +88,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
     ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
     : '';
 
-  const [mutate] = useMutation(() => deleteCard(token, deck!, card), {
+  const [deleteMutation] = useMutation(deleteCard, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
   if (!deck) return <Box className='no-deck-cards'></Box>;
@@ -101,11 +101,6 @@ export function CardStructure({ children, card }: CardStructureProps) {
       overflow='hidden'
       bg='teal.600'
       maxW='300px'
-      // _hover={{
-      //   borderColor: 'black',
-      //   bg: 'teal.500',
-      //   color: 'black',
-      // }}
     >
       <Flex justifyContent='flex-end'>
         <HStack spacing='5px' mr='5px' mt='5px'>
@@ -113,7 +108,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
             aria-label='Delete'
             colorScheme='teal'
             icon={<DeleteIcon />}
-            onClick={async () => await mutate()}
+            onClick={async () => deleteMutation({ token, deck, card })}
           />
         </HStack>
       </Flex>
