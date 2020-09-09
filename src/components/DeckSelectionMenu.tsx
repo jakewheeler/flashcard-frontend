@@ -231,8 +231,15 @@ function RadioCard(props: CustomRadioBtnProps) {
 
   const edit = async (newName: string) => {
     try {
-      await editSelectedDeck({ token, deck, newName });
+      const editedDeck: Deck | undefined = await editSelectedDeck({
+        token,
+        deck,
+        newName,
+      });
       setIsEditing(false);
+      if (editedDeck) {
+        setDeck(editedDeck);
+      }
     } catch (err) {
       console.error(`Could not delete deck: ${deck.name}`);
       console.error(err);
