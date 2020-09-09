@@ -65,7 +65,7 @@ export function useStoredUser() {
   }, [token, user, setUser]);
 }
 
-export function useCustomDeckGroup() {
+export function useDeckRadioGroup() {
   const setDeck = useSelectedDeck((state) => state.setDeck);
   const { data } = useAllUserDecks();
   const { getRootProps, getRadioProps } = useRadioGroup({

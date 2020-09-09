@@ -21,18 +21,18 @@ import {
   UseRadioProps,
 } from '@chakra-ui/core';
 import { StringOrNumber } from '@chakra-ui/utils';
-import { DecksByCategoryObj, Deck, EditDeckInputObj } from '../types/deck';
+import { Deck, EditDeckInputObj } from '../types/deck';
 import useStore from '../stores/user';
 import { useMutation, queryCache } from 'react-query';
 import { deleteDeck, editDeck } from '../api/card-service';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
-import { useCustomDeckGroup } from '../hooks';
+import { useDeckRadioGroup } from '../hooks';
 import { combineAllDecks } from '../utils';
 
 function DeckSelectionMenu() {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
-  const { group, getRadioProps } = useCustomDeckGroup();
+  const { group, getRadioProps } = useDeckRadioGroup();
 
   return (
     <Box minH='100vh' minW='500px' maxW='500px' bgColor='teal.400'>
