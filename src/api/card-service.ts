@@ -1,6 +1,7 @@
 import axios from 'axios';
-import { Category, Card, CreateCardType } from '../types/card';
-import { Deck, DecksByCategoryObj } from '../types/deck';
+import { Card, CreateCardType } from '../types/card';
+import { Deck } from '../types/deck';
+import { Category } from '../types/category';
 
 export async function getCategory(
   token: string,
@@ -34,12 +35,9 @@ export async function getCategories(token: string): Promise<Category[]> {
 }
 
 export async function getAllUserDecks(token: string) {
-  const response = await axios.get<DecksByCategoryObj>(
-    `/categories/all/decks`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
+  const response = await axios.get<Deck[]>(`/categories/all/decks`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   if (response.status === 200) {
     return response.data;

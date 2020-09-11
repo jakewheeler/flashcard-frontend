@@ -12,7 +12,6 @@ import { useEffect } from 'react';
 import { tryFetchLoggedInUser } from '../api/login-service';
 import useSelectedDeck from '../stores/deck';
 import { useRadioGroup } from '@chakra-ui/core';
-import { combineAllDecks } from '../utils';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
@@ -72,7 +71,7 @@ export function useDeckRadioGroup() {
     name: 'decks',
     defaultValue: 'react',
     onChange: (selectedDeck) => {
-      setDeck(combineAllDecks(data!).find((d) => d.name === selectedDeck)!);
+      setDeck(data!.find((d) => d.name === selectedDeck)!);
     },
   });
 

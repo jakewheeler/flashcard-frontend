@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent, RefObject } from 'react';
-import { useAllUserDecks, useCategory } from '../hooks/index';
+import { useAllUserDecks, useCategory, useCategories } from '../hooks/index';
 import useSelectedDeck from '../stores/deck';
 import {
   Box,
@@ -38,7 +38,6 @@ import { deleteDeck, editDeck, createDeck } from '../api/card-service';
 import { EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import { useForm } from 'react-hook-form';
 import { useDeckRadioGroup } from '../hooks';
-import { combineAllDecks } from '../utils';
 
 function DeckSelectionMenu() {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
@@ -99,7 +98,7 @@ type ViewByProps = {
 };
 
 function ViewByCategory({ group, getRadioProps }: ViewByProps) {
-  const { isLoading, error, isError, data } = useAllUserDecks();
+  const { isLoading, error, isError, data } = useCategories();
 
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
@@ -111,14 +110,14 @@ function ViewByCategory({ group, getRadioProps }: ViewByProps) {
 
   return (
     <>
-      {Object.keys(data).map((categoryId) => (
+      {data.map((category) => (
         // each category has its own collapsible
-        <CollapsibleCategory key={categoryId} categoryId={categoryId}>
+        <CollapsibleCategory key={category.id} categoryId={category.id}>
           <VStack spacing={2} align='left'>
-            <AddDeckModal categoryId={categoryId} />
+            <AddDeckModal categoryId={category.id} />
             <RadioCardGroup
               group={group}
-              decks={data[categoryId]}
+              decks={category.decks}
               getRadioProps={getRadioProps}
             />
           </VStack>
@@ -143,7 +142,7 @@ function ViewByDeck({ group, getRadioProps }: ViewByProps) {
     <>
       <RadioCardGroup
         group={group}
-        decks={combineAllDecks(data)}
+        decks={data}
         getRadioProps={getRadioProps}
       />
     </>
@@ -193,11 +192,12 @@ type RadioCardGroupProps = ViewByProps & {
 function RadioCardGroup({ group, decks, getRadioProps }: RadioCardGroupProps) {
   return (
     <VStack {...group} align='left'>
-      {decks.map((deckInCategory: Deck) => {
-        const value = deckInCategory.name;
+      {decks.map((deck: Deck) => {
+        // console.log(deck);
+        const value = deck.name;
         const radio = getRadioProps({ value });
         return (
-          <RadioCard key={deckInCategory.id} deck={deckInCategory} {...radio}>
+          <RadioCard key={deck.id} deck={deck} {...radio}>
             <Text isTruncated>{value}</Text>
           </RadioCard>
         );
@@ -222,7 +222,7 @@ function RadioCard(props: CustomRadioBtnProps) {
 
   const token = useStore((state) => state.token);
 
-  const cacheKey = `${token}/categories/all/decks`;
+  const cacheKey = `${token}/categories`;
 
   const [deleteSelectedDeck] = useMutation(deleteDeck, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
@@ -358,7 +358,7 @@ function AddDeckModal({ categoryId }: AddDeckModalProps) {
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
-  const cacheKey = `${token}/categories/all/decks`;
+  const cacheKey = `${token}/categories/${categoryId}/decks`;
   const [addDeck] = useMutation(createDeck, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
