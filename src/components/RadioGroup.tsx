@@ -123,6 +123,7 @@ export function RadioCard(props: CustomRadioBtnProps) {
             <EditDeckInput
               currentDeckName={currentDeck.name}
               handleEdit={edit}
+              close={() => setIsEditing(false)}
             />
           ) : (
             props.children

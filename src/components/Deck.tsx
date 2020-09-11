@@ -19,6 +19,7 @@ import {
   FormLabel,
   ModalFooter,
   useToast,
+  HStack,
 } from '@chakra-ui/core';
 import { useCategory } from '../hooks';
 import useStore from '../stores/user';
@@ -28,11 +29,13 @@ import { createDeck } from '../api/card-service';
 type EditDeckInputProps = {
   currentDeckName: string;
   handleEdit: (newName: string) => Promise<void>;
+  close: () => void;
 };
 
 export function EditDeckInput({
   currentDeckName,
   handleEdit,
+  close,
 }: EditDeckInputProps) {
   const { register, handleSubmit } = useForm<EditDeckInputObj>();
 
@@ -42,20 +45,22 @@ export function EditDeckInput({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <InputGroup size='md'>
+      <VStack align='left'>
         <Input
           name='newName'
-          pr='4.5rem'
           placeholder={currentDeckName}
           textColor='black'
           ref={register}
         />
-        <InputRightElement width='4.5rem'>
+        <HStack>
+          <Button h='1.75rem' size='sm' colorScheme='teal' onClick={close}>
+            Cancel
+          </Button>
           <Button h='1.75rem' size='sm' type='submit' colorScheme='teal'>
             OK
           </Button>
-        </InputRightElement>
-      </InputGroup>
+        </HStack>
+      </VStack>
     </form>
   );
 }
