@@ -2,9 +2,7 @@ import { useForm } from 'react-hook-form';
 import { EditDeckInputObj } from '../types/deck';
 import React from 'react';
 import {
-  InputGroup,
   Input,
-  InputRightElement,
   Button,
   Text,
   useDisclosure,

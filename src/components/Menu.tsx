@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from 'react';
-import { useAllUserDecks, useCategory, useCategories } from '../hooks/index';
+import { useAllUserDecks, useCategories } from '../hooks/index';
 import {
   Box,
   Heading,
@@ -9,14 +9,12 @@ import {
   HStack,
   Radio,
   Text,
-  Spinner,
-  Button,
-  Collapse,
 } from '@chakra-ui/core';
 import { StringOrNumber } from '@chakra-ui/utils';
 import { useDeckRadioGroup } from '../hooks';
 import { AddDeckModal } from './Deck';
 import { RadioCardGroup } from './RadioGroup';
+import { CollapsibleCategory } from './Category';
 
 function Menu() {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
@@ -124,42 +122,6 @@ function ViewByDeck({ group, getRadioProps }: ViewByProps) {
         decks={data}
         getRadioProps={getRadioProps}
       />
-    </>
-  );
-}
-
-type CollapsibleCategoryProps = {
-  categoryId: string;
-  children: React.ReactNode;
-};
-
-// Category that will display the deck radio button group under it
-function CollapsibleCategory({
-  categoryId,
-  children,
-}: CollapsibleCategoryProps) {
-  const { isLoading, error, isError, data: category } = useCategory(categoryId);
-
-  const [show, setShow] = React.useState<boolean>(false);
-
-  const handleToggle = () => setShow(!show);
-
-  if (isError) {
-    return <span>Error: {(error as Error).message}</span>;
-  }
-
-  if (isLoading || !category) {
-    return <Spinner color='white' />;
-  }
-
-  return (
-    <>
-      <Button colorScheme='teal' onClick={handleToggle}>
-        <Text isTruncated> {category.name}</Text>
-      </Button>
-      <Collapse mt={4} isOpen={show}>
-        <Box ml={10}>{children}</Box>
-      </Collapse>
     </>
   );
 }
