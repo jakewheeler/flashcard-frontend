@@ -1,0 +1,141 @@
+import { useForm } from 'react-hook-form';
+import { EditDeckInputObj } from '../types/deck';
+import React from 'react';
+import {
+  InputGroup,
+  Input,
+  InputRightElement,
+  Button,
+  Text,
+  useDisclosure,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  VStack,
+  FormControl,
+  FormLabel,
+  ModalFooter,
+} from '@chakra-ui/core';
+import { useCategory } from '../hooks';
+import useStore from '../stores/user';
+import { useMutation, queryCache } from 'react-query';
+import { createDeck } from '../api/card-service';
+
+type EditDeckInputProps = {
+  currentDeckName: string;
+  handleEdit: (newName: string) => Promise<void>;
+};
+
+export function EditDeckInput({
+  currentDeckName,
+  handleEdit,
+}: EditDeckInputProps) {
+  const { register, handleSubmit } = useForm<EditDeckInputObj>();
+
+  const onSubmit = async (input: EditDeckInputObj) => {
+    await handleEdit(input.newName);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <InputGroup size='md'>
+        <Input
+          name='newName'
+          pr='4.5rem'
+          placeholder={currentDeckName}
+          textColor='black'
+          ref={register}
+        />
+        <InputRightElement width='4.5rem'>
+          <Button h='1.75rem' size='sm' type='submit' colorScheme='teal'>
+            OK
+          </Button>
+        </InputRightElement>
+      </InputGroup>
+    </form>
+  );
+}
+
+type AddDeckModalProps = {
+  categoryId: string;
+};
+
+type AddDeckInputObj = {
+  name: string;
+};
+
+export function AddDeckModal({ categoryId }: AddDeckModalProps) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { data: category } = useCategory(categoryId);
+  const token = useStore((state) => state.token);
+  const { register, handleSubmit } = useForm<AddDeckInputObj>();
+
+  const initialRef = React.useRef<HTMLInputElement | null>(null);
+
+  const cacheKeys = [`${token}/categories`, `${token}/categories/all/decks`];
+  const [addDeck] = useMutation(createDeck, {
+    onSuccess: () =>
+      cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),
+  });
+
+  const onSubmit = async (deck: AddDeckInputObj) => {
+    const { name } = deck;
+    try {
+      await addDeck({ token, categoryId, name });
+      onClose();
+    } catch (err) {
+      console.error(`Could not add deck: ${deck.name}`);
+      console.error(err);
+    }
+  };
+
+  return (
+    <>
+      <Button colorScheme='teal' onClick={onOpen}>
+        Add Deck
+      </Button>
+      <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <ModalContent>
+              <ModalHeader>Create a new deck</ModalHeader>
+              <ModalCloseButton />
+
+              <ModalBody pb={6}>
+                <VStack spacing={2}>
+                  <FormControl>
+                    <FormLabel>Deck name</FormLabel>
+                    <Input
+                      name='name'
+                      ref={(ref) => {
+                        if (ref) {
+                          initialRef.current = ref;
+                          register(ref);
+                        }
+                      }}
+                      placeholder='enter the deck name'
+                    />
+                  </FormControl>
+                  <Text>
+                    This deck will be added to{' '}
+                    <span style={{ fontWeight: 'bold' }}>{category?.name}</span>
+                  </Text>
+                </VStack>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button colorScheme='teal' mr={3} type='submit'>
+                  Save
+                </Button>
+                <Button onClick={onClose}>Cancel</Button>
+              </ModalFooter>
+            </ModalContent>
+          </form>
+        </ModalOverlay>
+      </Modal>
+    </>
+  );
+}

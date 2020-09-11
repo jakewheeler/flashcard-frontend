@@ -7,22 +7,15 @@ import CardTemplate, {
   ResponsiveCardLayout,
   CreateCardCollapsible,
 } from '../components/Card';
-import DeckSelectionMenu from '../components/DeckSelectionMenu';
-// import { useHistory } from 'react-router-dom';
+import Menu from '../components/Menu';
 
 export default function Library() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
-  //   const { push } = useHistory();
-  //   const token = useStore((state) => state.token);
-
-  //   if (!token) {
-  //     push('/');
-  //   }
 
   return (
     <Flex className='lib-container'>
       {/* left side menu */}
-      <DeckSelectionMenu />
+      <Menu />
       <Flex flexDir='column'>
         <VStack ml={60} mt={5} align='left' spacing={3}>
           <Heading color='teal.900'>
@@ -52,6 +45,14 @@ function CardView({ deck }: CardPanelProps) {
 
   if (isLoading) {
     return <Spinner color='white' />;
+  }
+
+  if (!data?.length) {
+    return (
+      <Heading color='teal.700' m={50}>
+        No cards yet
+      </Heading>
+    );
   }
 
   return (
