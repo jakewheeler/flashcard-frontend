@@ -222,14 +222,16 @@ function RadioCard(props: CustomRadioBtnProps) {
 
   const token = useStore((state) => state.token);
 
-  const cacheKey = `${token}/categories`;
+  const cacheKeys = [`${token}/categories`, `${token}/categories/all/decks`];
 
   const [deleteSelectedDeck] = useMutation(deleteDeck, {
-    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+    onSuccess: () =>
+      cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),
   });
 
   const [editSelectedDeck] = useMutation(editDeck, {
-    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+    onSuccess: () =>
+      cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),
   });
 
   const deletion = async () => {
@@ -358,7 +360,7 @@ function AddDeckModal({ categoryId }: AddDeckModalProps) {
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
-  const cacheKey = `${token}/categories/${categoryId}/decks`;
+  const cacheKey = `${token}/categories`;
   const [addDeck] = useMutation(createDeck, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });
