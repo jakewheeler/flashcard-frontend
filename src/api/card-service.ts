@@ -34,6 +34,73 @@ export async function getCategories(token: string): Promise<Category[]> {
   throw new Error(response.statusText);
 }
 
+type CategoryInput = {
+  token: string;
+  name: string;
+};
+
+export async function createCategory({
+  token,
+  name,
+}: CategoryInput): Promise<Category> {
+  const body = {
+    name,
+  };
+  const response = await axios.post<Category>('/categories', body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
+type EditCategoryInput = {
+  token: string;
+  category: Category;
+  name: string;
+};
+
+export async function editCategory({
+  token,
+  category,
+  name,
+}: EditCategoryInput) {
+  const body = {
+    name,
+  };
+  const response = await axios.patch<Deck>(`/categories/${category.id}`, body, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
+type DeleteCategoryInput = {
+  token: string;
+  category: Category;
+};
+
+export async function deleteCategory({ token, category }: DeleteCategoryInput) {
+  const response = await axios.delete<void>(`/categories/${category.id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (response.status === 200) {
+    return response.data;
+  }
+
+  throw new Error(response.statusText);
+}
+
 export async function getAllUserDecks(token: string) {
   const response = await axios.get<Deck[]>(`/categories/all/decks`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -58,12 +125,12 @@ export async function getDecks(token: string, id: string) {
   throw new Error(response.statusText);
 }
 
-type DeleteDeckProps = {
+type DeleteDeckInput = {
   token: string;
   deck: Deck;
 };
 
-export async function deleteDeck({ token, deck }: DeleteDeckProps) {
+export async function deleteDeck({ token, deck }: DeleteDeckInput) {
   const response = await axios.delete<void>(
     `/categories/${deck.categoryId}/decks/${deck.id}`,
     {
@@ -78,11 +145,13 @@ export async function deleteDeck({ token, deck }: DeleteDeckProps) {
   throw new Error(response.statusText);
 }
 
-type EditDeckProps = DeleteDeckProps & {
+type EditDeckInput = {
+  token: string;
+  deck: Deck;
   newName: string;
 };
 
-export async function editDeck({ token, deck, newName }: EditDeckProps) {
+export async function editDeck({ token, deck, newName }: EditDeckInput) {
   const body = {
     name: newName,
   };
@@ -101,13 +170,13 @@ export async function editDeck({ token, deck, newName }: EditDeckProps) {
   throw new Error(response.statusText);
 }
 
-type CreateDeckProps = {
+type CreateDeckInput = {
   token: string;
   categoryId: string;
   name: string;
 };
 
-export async function createDeck({ token, categoryId, name }: CreateDeckProps) {
+export async function createDeck({ token, categoryId, name }: CreateDeckInput) {
   const body = {
     name,
   };
@@ -166,7 +235,7 @@ export async function createCard(
   throw new Error(response.statusText);
 }
 
-type EditCardType = {
+type EditCardInput = {
   token: string;
   deck: Deck;
   card: Card;
@@ -178,7 +247,7 @@ export async function editCard({
   deck,
   card,
   editedProperties,
-}: EditCardType) {
+}: EditCardInput) {
   const { front, back, type } = editedProperties;
   const body: CreateCardType = { front, back, type };
 
@@ -197,7 +266,7 @@ export async function editCard({
   throw new Error(response.statusText);
 }
 
-type DeleteCardType = {
+type DeleteCardInput = {
   token: string;
   deck: Deck;
   card: Card;
@@ -207,7 +276,7 @@ export async function deleteCard({
   token,
   deck,
   card,
-}: DeleteCardType): Promise<void> {
+}: DeleteCardInput): Promise<void> {
   await axios.delete(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`,
     {

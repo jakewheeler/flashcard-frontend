@@ -153,7 +153,13 @@ function CardForm({ onCancel, onSubmit, card }: CardFormProps) {
     CreateCardType
   >();
   return (
-    <VStack spacing={4} color='teal.900' align='left'>
+    <VStack
+      spacing={4}
+      align='left'
+      borderWidth={card ? '0px' : '1px'}
+      borderRadius='lg'
+      padding={card ? 0 : 5}
+    >
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormLabel color='white'>Description</FormLabel>
         <Textarea
@@ -182,6 +188,12 @@ function CardForm({ onCancel, onSubmit, card }: CardFormProps) {
         <HStack justifyContent='flex-start' mt={5}>
           <Button
             colorScheme='teal'
+            isLoading={formState.isSubmitting}
+            type='submit'
+          >
+            Save
+          </Button>
+          <Button
             onClick={() => {
               onCancel();
               reset();
@@ -189,13 +201,6 @@ function CardForm({ onCancel, onSubmit, card }: CardFormProps) {
             isDisabled={formState.isSubmitting}
           >
             Cancel
-          </Button>
-          <Button
-            colorScheme='teal'
-            isLoading={formState.isSubmitting}
-            type='submit'
-          >
-            Save
           </Button>
         </HStack>
       </form>

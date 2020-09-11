@@ -51,11 +51,11 @@ export function EditDeckInput({
           ref={register}
         />
         <HStack>
-          <Button h='1.75rem' size='sm' colorScheme='teal' onClick={close}>
-            Cancel
-          </Button>
           <Button h='1.75rem' size='sm' type='submit' colorScheme='teal'>
             OK
+          </Button>
+          <Button h='1.75rem' size='sm' onClick={close} color='black'>
+            Cancel
           </Button>
         </HStack>
       </VStack>

@@ -14,7 +14,7 @@ import { StringOrNumber } from '@chakra-ui/utils';
 import { useDeckRadioGroup } from '../hooks';
 import { AddDeckModal } from './Deck';
 import { RadioCardGroup } from './RadioGroup';
-import { CollapsibleCategory } from './Category';
+import { CollapsibleCategory, AddCategoryModal } from './Category';
 
 function Menu() {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
@@ -47,7 +47,10 @@ function Menu() {
       </VStack>
       <VStack align='left' paddingTop={5} mr={5} ml={5}>
         {viewByValue === 'category' ? (
-          <ViewByCategory group={group} getRadioProps={getRadioProps} />
+          <>
+            <AddCategoryModal />
+            <ViewByCategory group={group} getRadioProps={getRadioProps} />
+          </>
         ) : (
           <ViewByDeck group={group} getRadioProps={getRadioProps} />
         )}
