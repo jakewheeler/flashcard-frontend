@@ -79,7 +79,6 @@ export type ViewByProps = {
 
 function ViewByCategory({ group, getRadioProps }: ViewByProps) {
   const { isLoading, error, isError, data } = useCategories();
-
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
   }

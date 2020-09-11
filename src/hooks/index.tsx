@@ -54,7 +54,6 @@ export function useStoredUser() {
           let user = await tryFetchLoggedInUser(token);
           setUser(user, token);
         } catch (err) {
-          console.error('Existing token is not valid');
           setUser('', '');
           window.localStorage.setItem('token', '');
         }

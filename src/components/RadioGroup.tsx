@@ -7,6 +7,7 @@ import {
   HStack,
   IconButton,
   Text,
+  useToast,
 } from '@chakra-ui/core';
 import React, { useState } from 'react';
 import useSelectedDeck from '../stores/deck';
@@ -52,6 +53,7 @@ export function RadioCard(props: CustomRadioBtnProps) {
   const { deck } = props;
   const { currentDeck, setDeck } = useSelectedDeck();
   const [isEditing, setIsEditing] = useState(false);
+  const toast = useToast();
 
   const input = getInputProps();
   const checkbox = getCheckboxProps();
@@ -64,20 +66,34 @@ export function RadioCard(props: CustomRadioBtnProps) {
   const [deleteSelectedDeck] = useMutation(deleteDeck, {
     onSuccess: () =>
       cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),
+    throwOnError: true,
   });
 
   const [editSelectedDeck] = useMutation(editDeck, {
     onSuccess: () =>
       cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),
+    throwOnError: true,
   });
 
   const deletion = async () => {
     try {
       await deleteSelectedDeck({ token, deck });
       setDeck(null);
+      toast({
+        description: `${deck.name} has been deleted!`,
+        duration: 2000,
+        isClosable: true,
+        status: 'success',
+        position: 'top-right',
+      });
     } catch (err) {
-      console.error(`Could not delete deck: ${deck.name}`);
-      console.error(err);
+      toast({
+        description: `Could not delete deck`,
+        duration: 9000,
+        isClosable: true,
+        status: 'error',
+        position: 'top-right',
+      });
     }
   };
 
@@ -91,10 +107,24 @@ export function RadioCard(props: CustomRadioBtnProps) {
       setIsEditing(false);
       if (editedDeck) {
         setDeck(editedDeck);
+        toast({
+          description: `${deck.name} has been renamed to ${editedDeck.name}`,
+          duration: 2000,
+          isClosable: true,
+          status: 'success',
+          position: 'top-right',
+        });
+      } else {
+        setDeck(null);
       }
     } catch (err) {
-      console.error(`Could not delete deck: ${deck.name}`);
-      console.error(err);
+      toast({
+        description: `Could not edit deck`,
+        duration: 9000,
+        isClosable: true,
+        status: 'error',
+        position: 'top-right',
+      });
     }
   };
 
