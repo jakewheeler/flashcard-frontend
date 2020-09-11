@@ -18,6 +18,7 @@ import {
   FormControl,
   FormLabel,
   ModalFooter,
+  useToast,
 } from '@chakra-ui/core';
 import { useCategory } from '../hooks';
 import useStore from '../stores/user';
@@ -72,6 +73,7 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
   const { data: category } = useCategory(categoryId);
   const token = useStore((state) => state.token);
   const { register, handleSubmit } = useForm<AddDeckInputObj>();
+  const toast = useToast();
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -79,6 +81,7 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
   const [addDeck] = useMutation(createDeck, {
     onSuccess: () =>
       cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),
+    throwOnError: true,
   });
 
   const onSubmit = async (deck: AddDeckInputObj) => {
@@ -87,8 +90,15 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
       await addDeck({ token, categoryId, name });
       onClose();
     } catch (err) {
-      console.error(`Could not add deck: ${deck.name}`);
-      console.error(err);
+      onClose();
+      toast({
+        title: 'Unable to add deck',
+        description: `Could not add deck '${deck.name}' because a deck with this name already exists`,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+        position: 'top-right',
+      });
     }
   };
 
