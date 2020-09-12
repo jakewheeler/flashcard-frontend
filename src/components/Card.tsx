@@ -83,9 +83,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
   const deck = useSelectedDeck((state) => state.currentDeck);
   const token = useStore((state) => state.token);
 
-  const cacheKey = deck
-    ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
-    : '';
+  const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
 
   const [deleteMutation] = useMutation(deleteCard, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
@@ -214,13 +212,11 @@ type ModifyCardFormProps = {
 
 function AddCardForm({ onCancel }: ModifyCardFormProps) {
   const token = useStore((state) => state.token);
-  const selectedDeck = useSelectedDeck((state) => state.currentDeck);
-  const cacheKey = `${token}/categories/${selectedDeck!.categoryId}/decks/${
-    selectedDeck!.id
-  }/cards`;
+  const deck = useSelectedDeck((state) => state.currentDeck);
+  const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
   const [mutate] = useMutation(
     (formData: CreateCardType) => {
-      return createCard(token, selectedDeck!, formData);
+      return createCard(token, deck!, formData);
     },
     { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
   );
@@ -232,7 +228,7 @@ function AddCardForm({ onCancel }: ModifyCardFormProps) {
       onCancel();
     } catch (err) {
       console.error(err);
-      console.error(`Could not add new card to ${selectedDeck!.name}`);
+      console.error(`Could not add new card to ${deck!.name}`);
     }
   };
 
@@ -267,9 +263,7 @@ function EditCardModal({ card }: EditCardModalProps) {
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
-  const cacheKey = deck
-    ? `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`
-    : '';
+  const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
   const [editMutation] = useMutation(editCard, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
   });

@@ -1,17 +1,13 @@
-import axios from 'axios';
 import { Card, CreateCardType } from '../types/card';
 import { Deck } from '../types/deck';
 import { Category } from '../types/category';
+import client from './client';
 
 export async function getCategory(
   token: string,
   id: string
 ): Promise<Category> {
-  const response = await axios.get<Category>(`/categories/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await client().get<Category>(`/categories/${id}`);
 
   if (response.status === 200) {
     return response.data;
@@ -21,11 +17,7 @@ export async function getCategory(
 }
 
 export async function getCategories(token: string): Promise<Category[]> {
-  const response = await axios.get<Category[]>('/categories', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await client().get<Category[]>('/categories');
 
   if (response.status === 200) {
     return response.data;
@@ -46,11 +38,7 @@ export async function createCategory({
   const body = {
     name,
   };
-  const response = await axios.post<Category>('/categories', body, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await client().post<Category>('/categories', body);
 
   if (response.status === 201) {
     return response.data;
@@ -73,9 +61,10 @@ export async function editCategory({
   const body = {
     name,
   };
-  const response = await axios.patch<Deck>(`/categories/${category.id}`, body, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await client().patch<Deck>(
+    `/categories/${category.id}`,
+    body
+  );
 
   if (response.status === 200) {
     return response.data;
@@ -90,9 +79,7 @@ type DeleteCategoryInput = {
 };
 
 export async function deleteCategory({ token, category }: DeleteCategoryInput) {
-  const response = await axios.delete<void>(`/categories/${category.id}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await client().delete<void>(`/categories/${category.id}`);
 
   if (response.status === 200) {
     return response.data;
@@ -102,9 +89,7 @@ export async function deleteCategory({ token, category }: DeleteCategoryInput) {
 }
 
 export async function getAllUserDecks(token: string) {
-  const response = await axios.get<Deck[]>(`/categories/all/decks`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await client().get<Deck[]>(`/categories/all/decks`);
 
   if (response.status === 200) {
     return response.data;
@@ -114,9 +99,7 @@ export async function getAllUserDecks(token: string) {
 }
 
 export async function getDecks(token: string, id: string) {
-  const response = await axios.get<Deck[]>(`/categories/${id}/decks`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const response = await client().get<Deck[]>(`/categories/${id}/decks`);
 
   if (response.status === 200) {
     return response.data;
@@ -131,11 +114,8 @@ type DeleteDeckInput = {
 };
 
 export async function deleteDeck({ token, deck }: DeleteDeckInput) {
-  const response = await axios.delete<void>(
-    `/categories/${deck.categoryId}/decks/${deck.id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+  const response = await client().delete<void>(
+    `/categories/${deck.categoryId}/decks/${deck.id}`
   );
 
   if (response.status === 200) {
@@ -155,12 +135,9 @@ export async function editDeck({ token, deck, newName }: EditDeckInput) {
   const body = {
     name: newName,
   };
-  const response = await axios.patch<Deck>(
+  const response = await client().patch<Deck>(
     `/categories/${deck.categoryId}/decks/${deck.id}`,
-    body,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+    body
   );
 
   if (response.status === 200) {
@@ -180,12 +157,9 @@ export async function createDeck({ token, categoryId, name }: CreateDeckInput) {
   const body = {
     name,
   };
-  const response = await axios.post<Deck>(
+  const response = await client().post<Deck>(
     `/categories/${categoryId}/decks`,
-    body,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+    body
   );
 
   if (response.status === 201) {
@@ -196,11 +170,8 @@ export async function createDeck({ token, categoryId, name }: CreateDeckInput) {
 }
 
 export async function getCards(token: string, deck: Deck) {
-  const response = await axios.get<Card[]>(
-    `/categories/${deck.categoryId}/decks/${deck.id}/cards`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+  const response = await client().get<Card[]>(
+    `/categories/${deck.categoryId}/decks/${deck.id}/cards`
   );
 
   if (response.status === 200) {
@@ -220,12 +191,9 @@ export async function createCard(
     back,
     type,
   };
-  const response = await axios.post<Card>(
+  const response = await client().post<Card>(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards`,
-    body,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+    body
   );
 
   if (response.status === 201) {
@@ -251,12 +219,9 @@ export async function editCard({
   const { front, back, type } = editedProperties;
   const body: CreateCardType = { front, back, type };
 
-  const response = await axios.patch<Card>(
+  const response = await client().patch<Card>(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`,
-    body,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+    body
   );
 
   if (response.status === 200) {
@@ -277,10 +242,7 @@ export async function deleteCard({
   deck,
   card,
 }: DeleteCardInput): Promise<void> {
-  await axios.delete(
-    `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
+  await client().delete(
+    `/categories/${deck.categoryId}/decks/${deck.id}/cards/${card.id}`
   );
 }

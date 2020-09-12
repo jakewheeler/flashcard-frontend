@@ -15,31 +15,28 @@ import { useRadioGroup } from '@chakra-ui/core';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
-  return useQuery(`${token}/categories/all/decks`, () =>
-    getAllUserDecks(token)
-  );
+  return useQuery(['decks', token], () => getAllUserDecks(token));
 }
 
 export function useDecks(id: string) {
   const token = useStore((state) => state.token);
-  return useQuery(`${token}/categories/${id}/decks`, () => getDecks(token, id));
+  return useQuery(['decks', token, id], () => getDecks(token, id));
 }
 
 export function useCategory(id: string) {
   const token = useStore((state) => state.token);
-  return useQuery(`${token}/categories/${id}`, () => getCategory(token, id));
+  return useQuery(['category', token, id], () => getCategory(token, id));
 }
 
 export function useCategories() {
   const token = useStore((state) => state.token);
-  return useQuery(`${token}/categories`, () => getCategories(token));
+  return useQuery(['categories', token], () => getCategories(token));
 }
 
 export function useCards(deck: Deck) {
   const token = useStore((state) => state.token);
-  return useQuery(
-    `${token}/categories/${deck.categoryId}/decks/${deck.id}/cards`,
-    () => getCards(token, deck)
+  return useQuery(['cards', token, deck.categoryId, deck.id], () =>
+    getCards(token, deck)
   );
 }
 

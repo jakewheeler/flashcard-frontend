@@ -80,7 +80,10 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
-  const cacheKeys = [`${token}/categories`, `${token}/categories/all/decks`];
+  const cacheKeys = [
+    ['decks', token],
+    ['categories', token],
+  ];
   const [addDeck] = useMutation(createDeck, {
     onSuccess: () =>
       cacheKeys.forEach((cacheKey) => queryCache.invalidateQueries(cacheKey)),

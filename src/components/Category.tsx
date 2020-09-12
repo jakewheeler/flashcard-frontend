@@ -25,7 +25,7 @@ import { AddIcon } from '@chakra-ui/icons';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import { createDeck, createCategory } from '../api/card-service';
+import { createCategory } from '../api/card-service';
 
 type CollapsibleCategoryProps = {
   categoryId: string;
@@ -75,7 +75,7 @@ export function AddCategoryModal() {
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
-  const cacheKey = `${token}/categories`;
+  const cacheKey = ['categories', token];
   const [addCategory] = useMutation(createCategory, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
     throwOnError: true,
@@ -89,7 +89,6 @@ export function AddCategoryModal() {
     } catch (err) {
       onClose();
       toast({
-        title: 'Unable to add deck',
         description: `Could not add category '${category.name}' because a category with this name already exists`,
         status: 'error',
         duration: 9000,
