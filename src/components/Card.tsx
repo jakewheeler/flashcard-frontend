@@ -18,6 +18,7 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
+  useToast,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
@@ -82,6 +83,7 @@ type CardStructureProps = {
 export function CardStructure({ children, card }: CardStructureProps) {
   const deck = useSelectedDeck((state) => state.currentDeck);
   const token = useStore((state) => state.token);
+  const toast = useToast();
 
   const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
 
@@ -111,9 +113,21 @@ export function CardStructure({ children, card }: CardStructureProps) {
             onClick={async () => {
               try {
                 await deleteMutation({ deck, card });
+                toast({
+                  description: `Card deleted successfully`,
+                  status: 'success',
+                  duration: 2000,
+                  isClosable: true,
+                  position: 'top-right',
+                });
               } catch (err) {
-                console.error(`Cannot delete card`);
-                console.error(err);
+                toast({
+                  description: `Card could not be deleted`,
+                  status: 'error',
+                  duration: 9000,
+                  isClosable: true,
+                  position: 'top-right',
+                });
               }
             }}
           />
@@ -214,6 +228,7 @@ type ModifyCardFormProps = {
 function AddCardForm({ onCancel }: ModifyCardFormProps) {
   const token = useStore((state) => state.token);
   const deck = useSelectedDeck((state) => state.currentDeck);
+  const toast = useToast();
   const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
   const [mutate] = useMutation(
     (formData: CreateCardType) => {
@@ -227,9 +242,21 @@ function AddCardForm({ onCancel }: ModifyCardFormProps) {
       await mutate(card);
       e.target.reset();
       onCancel();
+      toast({
+        description: `Card added to deck '${deck?.name}'`,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+        position: 'top-right',
+      });
     } catch (err) {
-      console.error(err);
-      console.error(`Could not add new card to ${deck!.name}`);
+      toast({
+        description: `Could not add card to deck '${deck?.name}'`,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+        position: 'top-right',
+      });
     }
   };
 

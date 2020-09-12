@@ -95,6 +95,13 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
     try {
       await addDeck({ categoryId, name });
       onClose();
+      toast({
+        description: `Added deck '${deck.name}' to category '${category?.name}'`,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+        position: 'top-right',
+      });
     } catch (err) {
       onClose();
       toast({

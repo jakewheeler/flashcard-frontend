@@ -86,6 +86,13 @@ export function AddCategoryModal() {
     try {
       await addCategory({ name });
       onClose();
+      toast({
+        description: `Added category '${category.name}'`,
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+        position: 'top-right',
+      });
     } catch (err) {
       onClose();
       toast({
