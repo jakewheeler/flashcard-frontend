@@ -48,7 +48,7 @@ export function useStoredUser() {
     async function authCheck() {
       if (token) {
         try {
-          let user = await tryFetchLoggedInUser(token);
+          let user = await tryFetchLoggedInUser();
           setUser(user, token);
         } catch (err) {
           setUser('', '');
@@ -65,7 +65,6 @@ export function useDeckRadioGroup() {
   const { data } = useAllUserDecks();
   const { getRootProps, getRadioProps } = useRadioGroup({
     name: 'decks',
-    defaultValue: 'react',
     onChange: (selectedDeck) => {
       setDeck(data!.find((d) => d.name === selectedDeck)!);
     },

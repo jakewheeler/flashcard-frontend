@@ -1,4 +1,4 @@
-import axios from 'axios';
+import client from '../api/client';
 import { UserData } from '../types/user';
 
 type Token = {
@@ -6,16 +6,13 @@ type Token = {
 };
 
 export async function fetchToken(user: UserData): Promise<string> {
-  const data = (await axios.post<Token>('/auth/signin', user)).data.accessToken;
+  const data = (await client().post<Token>('/auth/signin', user)).data
+    .accessToken;
   return data;
 }
 
-export async function tryFetchLoggedInUser(token: string): Promise<string> {
-  const response = await axios.get<string>('/auth/me', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+export async function tryFetchLoggedInUser(): Promise<string> {
+  const response = await client().get<string>('/auth/me');
 
   if (response.status === 200) {
     return response.data;
