@@ -84,7 +84,7 @@ export function AddCategoryModal() {
   const onSubmit = async (category: CategoryInput) => {
     const { name } = category;
     try {
-      await addCategory({ token, name });
+      await addCategory({ name });
       onClose();
     } catch (err) {
       onClose();

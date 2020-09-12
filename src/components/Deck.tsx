@@ -93,7 +93,7 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
   const onSubmit = async (deck: AddDeckInputObj) => {
     const { name } = deck;
     try {
-      await addDeck({ token, categoryId, name });
+      await addDeck({ categoryId, name });
       onClose();
     } catch (err) {
       onClose();

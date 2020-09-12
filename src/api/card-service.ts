@@ -3,9 +3,7 @@ import { Deck } from '../types/deck';
 import { Category } from '../types/category';
 import client from './client';
 
-export async function getCategory(
-  id: string
-): Promise<Category> {
+export async function getCategory(id: string): Promise<Category> {
   const response = await client().get<Category>(`/categories/${id}`);
 
   if (response.status === 200) {
@@ -15,7 +13,7 @@ export async function getCategory(
   throw new Error(response.statusText);
 }
 
-export async function getCategories(token: string): Promise<Category[]> {
+export async function getCategories(): Promise<Category[]> {
   const response = await client().get<Category[]>('/categories');
 
   if (response.status === 200) {
@@ -26,12 +24,10 @@ export async function getCategories(token: string): Promise<Category[]> {
 }
 
 type CategoryInput = {
-  token: string;
   name: string;
 };
 
 export async function createCategory({
-  token,
   name,
 }: CategoryInput): Promise<Category> {
   const body = {
@@ -47,16 +43,11 @@ export async function createCategory({
 }
 
 type EditCategoryInput = {
-  token: string;
   category: Category;
   name: string;
 };
 
-export async function editCategory({
-  token,
-  category,
-  name,
-}: EditCategoryInput) {
+export async function editCategory({ category, name }: EditCategoryInput) {
   const body = {
     name,
   };
@@ -73,11 +64,10 @@ export async function editCategory({
 }
 
 type DeleteCategoryInput = {
-  token: string;
   category: Category;
 };
 
-export async function deleteCategory({ token, category }: DeleteCategoryInput) {
+export async function deleteCategory({ category }: DeleteCategoryInput) {
   const response = await client().delete<void>(`/categories/${category.id}`);
 
   if (response.status === 200) {
@@ -87,7 +77,7 @@ export async function deleteCategory({ token, category }: DeleteCategoryInput) {
   throw new Error(response.statusText);
 }
 
-export async function getAllUserDecks(token: string) {
+export async function getAllUserDecks() {
   const response = await client().get<Deck[]>(`/categories/all/decks`);
 
   if (response.status === 200) {
@@ -97,7 +87,7 @@ export async function getAllUserDecks(token: string) {
   throw new Error(response.statusText);
 }
 
-export async function getDecks(token: string, id: string) {
+export async function getDecks(id: string) {
   const response = await client().get<Deck[]>(`/categories/${id}/decks`);
 
   if (response.status === 200) {
@@ -108,11 +98,10 @@ export async function getDecks(token: string, id: string) {
 }
 
 type DeleteDeckInput = {
-  token: string;
   deck: Deck;
 };
 
-export async function deleteDeck({ token, deck }: DeleteDeckInput) {
+export async function deleteDeck({ deck }: DeleteDeckInput) {
   const response = await client().delete<void>(
     `/categories/${deck.categoryId}/decks/${deck.id}`
   );
@@ -125,12 +114,11 @@ export async function deleteDeck({ token, deck }: DeleteDeckInput) {
 }
 
 type EditDeckInput = {
-  token: string;
   deck: Deck;
   newName: string;
 };
 
-export async function editDeck({ token, deck, newName }: EditDeckInput) {
+export async function editDeck({ deck, newName }: EditDeckInput) {
   const body = {
     name: newName,
   };
@@ -147,12 +135,11 @@ export async function editDeck({ token, deck, newName }: EditDeckInput) {
 }
 
 type CreateDeckInput = {
-  token: string;
   categoryId: string;
   name: string;
 };
 
-export async function createDeck({ token, categoryId, name }: CreateDeckInput) {
+export async function createDeck({ categoryId, name }: CreateDeckInput) {
   const body = {
     name,
   };
@@ -168,7 +155,7 @@ export async function createDeck({ token, categoryId, name }: CreateDeckInput) {
   throw new Error(response.statusText);
 }
 
-export async function getCards(token: string, deck: Deck) {
+export async function getCards(deck: Deck) {
   const response = await client().get<Card[]>(
     `/categories/${deck.categoryId}/decks/${deck.id}/cards`
   );
@@ -181,7 +168,6 @@ export async function getCards(token: string, deck: Deck) {
 }
 
 export async function createCard(
-  token: string,
   deck: Deck,
   { front, back, type }: CreateCardType
 ) {
@@ -203,14 +189,12 @@ export async function createCard(
 }
 
 type EditCardInput = {
-  token: string;
   deck: Deck;
   card: Card;
   editedProperties: CreateCardType;
 };
 
 export async function editCard({
-  token,
   deck,
   card,
   editedProperties,
@@ -231,13 +215,11 @@ export async function editCard({
 }
 
 type DeleteCardInput = {
-  token: string;
   deck: Deck;
   card: Card;
 };
 
 export async function deleteCard({
-  token,
   deck,
   card,
 }: DeleteCardInput): Promise<void> {

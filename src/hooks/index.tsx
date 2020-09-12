@@ -15,12 +15,12 @@ import { useRadioGroup } from '@chakra-ui/core';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
-  return useQuery(['decks', token], () => getAllUserDecks(token));
+  return useQuery(['decks', token], getAllUserDecks);
 }
 
 export function useDecks(id: string) {
   const token = useStore((state) => state.token);
-  return useQuery(['decks', token, id], () => getDecks(token, id));
+  return useQuery(['decks', token, id], () => getDecks(id));
 }
 
 export function useCategory(id: string) {
@@ -30,13 +30,13 @@ export function useCategory(id: string) {
 
 export function useCategories() {
   const token = useStore((state) => state.token);
-  return useQuery(['categories', token], () => getCategories(token));
+  return useQuery(['categories', token], getCategories);
 }
 
 export function useCards(deck: Deck) {
   const token = useStore((state) => state.token);
   return useQuery(['cards', token, deck.categoryId, deck.id], () =>
-    getCards(token, deck)
+    getCards(deck)
   );
 }
 

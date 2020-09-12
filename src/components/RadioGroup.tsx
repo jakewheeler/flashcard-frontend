@@ -80,7 +80,7 @@ export function RadioCard(props: CustomRadioBtnProps) {
 
   const deletion = async () => {
     try {
-      await deleteSelectedDeck({ token, deck });
+      await deleteSelectedDeck({ deck });
       setDeck(null);
       toast({
         description: `${deck.name} has been deleted!`,
@@ -103,7 +103,6 @@ export function RadioCard(props: CustomRadioBtnProps) {
   const edit = async (newName: string) => {
     try {
       const editedDeck: Deck | undefined = await editSelectedDeck({
-        token,
         deck,
         newName,
       });

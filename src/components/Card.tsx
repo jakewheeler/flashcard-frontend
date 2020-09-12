@@ -110,7 +110,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
             icon={<DeleteIcon />}
             onClick={async () => {
               try {
-                await deleteMutation({ token, deck, card });
+                await deleteMutation({ deck, card });
               } catch (err) {
                 console.error(`Cannot delete card`);
                 console.error(err);
@@ -217,7 +217,7 @@ function AddCardForm({ onCancel }: ModifyCardFormProps) {
   const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
   const [mutate] = useMutation(
     (formData: CreateCardType) => {
-      return createCard(token, deck!, formData);
+      return createCard(deck!, formData);
     },
     { onSuccess: () => queryCache.invalidateQueries(cacheKey) }
   );
@@ -276,7 +276,7 @@ function EditCardModal({ card }: EditCardModalProps) {
 
   const onSubmit = async (editedProperties: CreateCardType) => {
     try {
-      await editMutation({ token, deck, card, editedProperties });
+      await editMutation({ deck, card, editedProperties });
       onClose();
     } catch (err) {
       console.error(`Cannot edit card`);
