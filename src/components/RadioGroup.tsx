@@ -30,7 +30,6 @@ export function RadioCardGroup({
   return (
     <VStack {...group} align='left'>
       {decks.map((deck: Deck) => {
-        // console.log(deck);
         const value = deck.name;
         const radio = getRadioProps({ value });
         return (

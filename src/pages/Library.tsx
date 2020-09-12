@@ -16,6 +16,7 @@ export default function Library() {
     <Flex className='lib-container'>
       {/* left side menu */}
       <Menu />
+
       <Flex flexDir='column'>
         <VStack ml={60} mt={5} align='left' spacing={3}>
           <Heading color='teal.900'>

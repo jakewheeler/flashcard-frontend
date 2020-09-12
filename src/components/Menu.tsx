@@ -9,53 +9,89 @@ import {
   HStack,
   Radio,
   Text,
+  IconButton,
 } from '@chakra-ui/core';
 import { StringOrNumber } from '@chakra-ui/utils';
 import { useDeckRadioGroup } from '../hooks';
 import { AddDeckModal } from './Deck';
 import { RadioCardGroup } from './RadioGroup';
 import { CollapsibleCategory, AddCategoryModal } from './Category';
+import { ArrowRightIcon, ArrowLeftIcon } from '@chakra-ui/icons';
+
+type MenuControllerProps = {
+  isOpen: boolean;
+  toggle: () => void;
+};
+function MenuController({ isOpen, toggle }: MenuControllerProps) {
+  return (
+    <IconButton
+      aria-label={isOpen ? 'Close the menu' : 'Open the menu'}
+      colorScheme='teal'
+      icon={isOpen ? <ArrowLeftIcon /> : <ArrowRightIcon />}
+      mt={2}
+      ml={2}
+      onClick={toggle}
+      position='absolute'
+    />
+  );
+}
 
 function Menu() {
+  const [isOpen, setIsOpen] = useState(true);
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
   const { group, getRadioProps } = useDeckRadioGroup();
 
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <Box minH='100vh' minW='500px' maxW='500px' bgColor='teal.400'>
-      <Heading align='center' mt='35px' color='teal.100' mb='10px'>
-        Library
-      </Heading>
-      <Divider />
-      <VStack spacing='5px' mx='20px' mt='20px' align='left'>
-        <Text align='left' color='teal.100'>
-          View by{' '}
-        </Text>
-        <RadioGroup
-          defaultValue='category'
-          onChange={setViewByValue}
-          value={viewByValue}
-        >
-          <HStack spacing={5}>
-            <Radio colorScheme='white' value='category'>
-              Category
-            </Radio>
-            <Radio colorScheme='white' value='deck'>
-              Deck
-            </Radio>
-          </HStack>
-        </RadioGroup>
-      </VStack>
-      <VStack align='left' paddingTop={5} mr={5} ml={5}>
-        {viewByValue === 'category' ? (
-          <>
-            <AddCategoryModal />
-            <ViewByCategory group={group} getRadioProps={getRadioProps} />
-          </>
-        ) : (
-          <ViewByDeck group={group} getRadioProps={getRadioProps} />
-        )}
-      </VStack>
-    </Box>
+    <>
+      <MenuController isOpen={isOpen} toggle={toggleMenu} />
+      <Box
+        minH='100vh'
+        minW='500px'
+        maxW='500px'
+        bgColor='teal.400'
+        overflowX='hidden'
+        overflowY='auto'
+        display={isOpen ? 'block' : 'none'}
+      >
+        <Heading align='center' mt='35px' color='teal.100' mb='10px'>
+          Library
+        </Heading>
+        <Divider />
+        <VStack spacing='5px' mx='20px' mt='20px' align='left'>
+          <Text align='left' color='teal.100'>
+            View by{' '}
+          </Text>
+          <RadioGroup
+            defaultValue='category'
+            onChange={setViewByValue}
+            value={viewByValue}
+          >
+            <HStack spacing={5}>
+              <Radio colorScheme='white' value='category'>
+                Category
+              </Radio>
+              <Radio colorScheme='white' value='deck'>
+                Deck
+              </Radio>
+            </HStack>
+          </RadioGroup>
+        </VStack>
+        <VStack align='left' paddingTop={5} mr={5} ml={5}>
+          {viewByValue === 'category' ? (
+            <>
+              <AddCategoryModal />
+              <ViewByCategory group={group} getRadioProps={getRadioProps} />
+            </>
+          ) : (
+            <ViewByDeck group={group} getRadioProps={getRadioProps} />
+          )}
+        </VStack>
+      </Box>
+    </>
   );
 }
 

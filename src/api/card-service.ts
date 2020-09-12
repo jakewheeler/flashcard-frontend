@@ -33,6 +33,7 @@ export async function createCategory({
   const body = {
     name,
   };
+
   const response = await client().post<Category>('/categories', body);
 
   if (response.status === 201) {
