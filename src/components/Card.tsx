@@ -87,6 +87,7 @@ export function CardStructure({ children, card }: CardStructureProps) {
 
   const [deleteMutation] = useMutation(deleteCard, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
+    throwOnError: true,
   });
 
   if (!deck) return <Box className='no-deck-cards'></Box>;
@@ -266,6 +267,7 @@ function EditCardModal({ card }: EditCardModalProps) {
   const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
   const [editMutation] = useMutation(editCard, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
+    throwOnError: true,
   });
 
   if (!deck || !card) {

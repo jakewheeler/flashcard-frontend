@@ -4,7 +4,6 @@ import { Category } from '../types/category';
 import client from './client';
 
 export async function getCategory(
-  token: string,
   id: string
 ): Promise<Category> {
   const response = await client().get<Category>(`/categories/${id}`);

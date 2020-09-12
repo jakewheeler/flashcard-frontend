@@ -61,7 +61,10 @@ export function RadioCard(props: CustomRadioBtnProps) {
   const token = useStore((state) => state.token);
 
   // data comes from either one of these sources
-  const cacheKeys = [`${token}/categories`, `${token}/categories/all/decks`];
+  const cacheKeys = [
+    ['decks', token],
+    ['categories', token],
+  ];
 
   const [deleteSelectedDeck] = useMutation(deleteDeck, {
     onSuccess: () =>

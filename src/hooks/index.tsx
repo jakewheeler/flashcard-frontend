@@ -25,7 +25,7 @@ export function useDecks(id: string) {
 
 export function useCategory(id: string) {
   const token = useStore((state) => state.token);
-  return useQuery(['category', token, id], () => getCategory(token, id));
+  return useQuery(['category', token, id], () => getCategory(id));
 }
 
 export function useCategories() {
