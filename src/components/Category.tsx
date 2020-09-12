@@ -106,12 +106,7 @@ export function AddCategoryModal() {
         variant='outline'
         onClick={onOpen}
       />
-      <Modal
-        initialFocusRef={initialRef}
-        isOpen={isOpen}
-        onClose={onClose}
-        size='lg'
-      >
+      <Modal initialFocusRef={initialRef} isOpen={isOpen} onClose={onClose}>
         <ModalOverlay>
           <form onSubmit={handleSubmit(onSubmit)}>
             <ModalContent>
