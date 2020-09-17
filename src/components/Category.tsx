@@ -1,5 +1,5 @@
 import { useCategory } from '../hooks';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Spinner,
   Button,
@@ -20,12 +20,18 @@ import {
   FormLabel,
   Input,
   ModalFooter,
+  HStack,
 } from '@chakra-ui/core';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, EditIcon, DeleteIcon } from '@chakra-ui/icons';
 import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
-import { createCategory } from '../api/card-service';
+import {
+  createCategory,
+  deleteCategory,
+  editCategory,
+} from '../api/card-service';
+import { Category } from '../types/category';
 
 type CollapsibleCategoryProps = {
   categoryId: string;
@@ -38,10 +44,24 @@ export function CollapsibleCategory({
   children,
 }: CollapsibleCategoryProps) {
   const { isLoading, error, isError, data: category } = useCategory(categoryId);
-
-  const [show, setShow] = React.useState<boolean>(false);
+  const token = useStore((state) => state.token);
+  const [show, setShow] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const toast = useToast();
 
   const handleToggle = () => setShow(!show);
+
+  const cacheKey = ['category', token, categoryId];
+
+  const [deleteCategoryMut] = useMutation(deleteCategory, {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+    throwOnError: true,
+  });
+
+  const [editCategoryMut] = useMutation(editCategory, {
+    onSuccess: () => queryCache.invalidateQueries(cacheKey),
+    throwOnError: true,
+  });
 
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
@@ -51,15 +71,128 @@ export function CollapsibleCategory({
     return <Spinner color='white' />;
   }
 
+  const deletion = async () => {
+    try {
+      await deleteCategoryMut({ category });
+      toast({
+        description: `${category.name} has been deleted!`,
+        duration: 2000,
+        isClosable: true,
+        status: 'success',
+        position: 'top-right',
+      });
+    } catch (err) {
+      toast({
+        description: `Could not delete category`,
+        duration: 9000,
+        isClosable: true,
+        status: 'error',
+        position: 'top-right',
+      });
+    }
+  };
+
+  const edit = async (name: string) => {
+    try {
+      const editedCategory: Category | undefined = await editCategoryMut({
+        category,
+        name,
+      });
+      setIsEditing(false);
+      if (editedCategory) {
+        toast({
+          description: `${category.name} has been renamed to ${editedCategory.name}`,
+          duration: 2000,
+          isClosable: true,
+          status: 'success',
+          position: 'top-right',
+        });
+      }
+    } catch (err) {
+      toast({
+        description: `Could not edit deck`,
+        duration: 9000,
+        isClosable: true,
+        status: 'error',
+        position: 'top-right',
+      });
+    }
+  };
+
   return (
     <>
-      <Button colorScheme='teal' onClick={handleToggle}>
-        <Text isTruncated> {category.name}</Text>
-      </Button>
+      <HStack justifyContent='space-between'>
+        {isEditing ? (
+          <Box width='100%'>
+            <EditCategoryInput
+              currentCategoryName={category.name}
+              handleEdit={edit}
+              close={() => setIsEditing(false)}
+            />
+          </Box>
+        ) : (
+          <Button colorScheme='teal' onClick={handleToggle} width='100%'>
+            <Text isTruncated>{category.name}</Text>
+          </Button>
+        )}
+        <HStack>
+          <IconButton
+            colorScheme='black'
+            aria-label={`edit`}
+            icon={<EditIcon />}
+            onClick={() => setIsEditing(!isEditing)}
+          />
+          <IconButton
+            colorScheme='black'
+            aria-label={`delete`}
+            icon={<DeleteIcon />}
+            onClick={deletion}
+          />
+        </HStack>
+      </HStack>
       <Collapse mt={4} isOpen={show}>
         <Box ml={10}>{children}</Box>
       </Collapse>
     </>
+  );
+}
+
+type EditCategoryInputProps = {
+  currentCategoryName: string;
+  handleEdit: (newName: string) => Promise<void>;
+  close: () => void;
+};
+
+export function EditCategoryInput({
+  currentCategoryName,
+  handleEdit,
+  close,
+}: EditCategoryInputProps) {
+  const { register, handleSubmit } = useForm<{ name: string }>();
+
+  const onSubmit = async (input: { name: string }) => {
+    await handleEdit(input.name);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <VStack align='left'>
+        <Input
+          name='name'
+          placeholder={currentCategoryName}
+          textColor='black'
+          ref={register}
+        />
+        <HStack>
+          <Button h='1.75rem' size='sm' type='submit' colorScheme='teal'>
+            OK
+          </Button>
+          <Button h='1.75rem' size='sm' onClick={close} color='black'>
+            Cancel
+          </Button>
+        </HStack>
+      </VStack>
+    </form>
   );
 }
 

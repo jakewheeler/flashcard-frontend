@@ -52,7 +52,7 @@ export async function editCategory({ category, name }: EditCategoryInput) {
   const body = {
     name,
   };
-  const response = await client().patch<Deck>(
+  const response = await client().patch<Category>(
     `/categories/${category.id}`,
     body
   );
