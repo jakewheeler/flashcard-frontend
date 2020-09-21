@@ -1,7 +1,5 @@
-import { useCategory } from '../hooks';
 import React, { useState } from 'react';
 import {
-  Spinner,
   Button,
   Collapse,
   Box,
@@ -34,16 +32,15 @@ import {
 import { Category } from '../types/category';
 
 type CollapsibleCategoryProps = {
-  categoryId: string;
+  category: Category;
   children: React.ReactNode;
 };
 
 // Category that will display the deck radio button group under it
 export function CollapsibleCategory({
-  categoryId,
+  category,
   children,
 }: CollapsibleCategoryProps) {
-  const { isLoading, error, isError, data: category } = useCategory(categoryId);
   const token = useStore((state) => state.token);
   const [show, setShow] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -51,7 +48,7 @@ export function CollapsibleCategory({
 
   const handleToggle = () => setShow(!show);
 
-  const cacheKey = ['category', token, categoryId];
+  const cacheKey = ['categories', token];
 
   const [deleteCategoryMut] = useMutation(deleteCategory, {
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
@@ -62,14 +59,6 @@ export function CollapsibleCategory({
     onSuccess: () => queryCache.invalidateQueries(cacheKey),
     throwOnError: true,
   });
-
-  if (isError) {
-    return <span>Error: {(error as Error).message}</span>;
-  }
-
-  if (isLoading || !category) {
-    return <Spinner color='white' />;
-  }
 
   const deletion = async () => {
     try {

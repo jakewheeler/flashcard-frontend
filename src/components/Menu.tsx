@@ -115,6 +115,7 @@ export type ViewByProps = {
 
 function ViewByCategory({ group, getRadioProps }: ViewByProps) {
   const { isLoading, error, isError, data } = useCategories();
+
   if (isError) {
     return <span>Error: {(error as Error).message}</span>;
   }
@@ -127,7 +128,7 @@ function ViewByCategory({ group, getRadioProps }: ViewByProps) {
     <>
       {data.map((category) => (
         // each category has its own collapsible
-        <CollapsibleCategory key={category.id} categoryId={category.id}>
+        <CollapsibleCategory key={category.id} category={category}>
           <VStack spacing={2} align='left'>
             <AddDeckModal categoryId={category.id} />
             <RadioCardGroup
