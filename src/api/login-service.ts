@@ -20,3 +20,13 @@ export async function tryFetchLoggedInUser(): Promise<string> {
 
   throw new Error('User token is not valid.');
 }
+
+export async function signUp(user: UserData): Promise<void> {
+  const response = await client().post<void>('/auth/signup', user);
+
+  if (response.status === 201) {
+    return response.data;
+  }
+
+  throw new Error('Could not create account.');
+}

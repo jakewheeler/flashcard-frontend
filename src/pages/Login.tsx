@@ -10,20 +10,18 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
-import { fetchToken } from '../api/login-service';
+import { fetchToken, signUp } from '../api/login-service';
 import useStore from '../stores/user';
 import { getDecodedJwt } from '../utils';
 
 export default function Login() {
   const setUser = useStore((state) => state.setUser);
-  const { push } = useHistory();
   const [showLoginError, setShowLoginError] = useState<boolean>(false);
-  const { handleSubmit, register, errors, formState } = useForm<UserData>();
+  const { push } = useHistory();
 
   const onSubmit = async (user: UserData) => {
-    let token: string;
     try {
-      token = await fetchToken(user);
+      let token = await fetchToken(user);
       let username = getDecodedJwt(token).username;
       setUser(username, token);
       window.localStorage.setItem('token', token);
@@ -35,11 +33,44 @@ export default function Login() {
 
   return (
     <Box maxW='500px' margin='0 auto'>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      {showLoginError && (
+        <Text color='red.500'>Username and password are incorrect</Text>
+      )}
+      <UserForm onSubmit={onSubmit} />
+    </Box>
+  );
+}
+
+export function SignUp() {
+  const { push } = useHistory();
+
+  const onSubmit = async (user: UserData) => {
+    await signUp(user);
+    push('/login');
+  };
+
+  return (
+    <Box maxW='500px' margin='0 auto'>
+      <UserForm onSubmit={onSubmit} />
+    </Box>
+  );
+}
+
+type UserFormProps = {
+  onSubmit: (user: UserData) => void;
+};
+
+function UserForm({ onSubmit }: UserFormProps) {
+  const { handleSubmit, register, errors, formState } = useForm<UserData>();
+
+  const localSubmission = async (user: UserData) => {
+    await onSubmit(user);
+  };
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(localSubmission)}>
         <FormControl>
-          {showLoginError && (
-            <Text color='red.500'>Username and password are incorrect</Text>
-          )}
           <FormLabel htmlFor='username'>Username</FormLabel>
           <Input
             name='username'
@@ -72,6 +103,6 @@ export default function Login() {
           </Button>
         </FormControl>
       </form>
-    </Box>
+    </>
   );
 }
