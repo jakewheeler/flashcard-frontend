@@ -242,7 +242,7 @@ export function AddCategoryModal() {
               <ModalHeader>Create a new category</ModalHeader>
               <ModalCloseButton />
 
-              <ModalBody pb={6}>
+              <ModalBody pb={5} mr={10}>
                 <VStack spacing={2}>
                   <FormControl>
                     <FormLabel>Category name</FormLabel>

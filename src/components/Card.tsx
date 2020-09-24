@@ -48,7 +48,9 @@ export default function CardTemplate({ card }: CardProps) {
           minH='inherit'
           mb={50}
         >
-          <Text color='teal.100'>{card.front}</Text>
+          <Text color='teal.100' overflowWrap='anywhere' padding={5}>
+            {card.front}
+          </Text>
 
           <Button colorScheme='white' onClick={handleClick}>
             {isFlipped ? 'See description' : 'See answer'}
@@ -146,11 +148,7 @@ type ResponsiveCardLayoutProps = {
 
 export function ResponsiveCardLayout({ children }: ResponsiveCardLayoutProps) {
   return (
-    <Flex
-      justifyContent={['center', 'center', 'left', 'left']}
-      padding='20px'
-      flexWrap='wrap'
-    >
+    <Flex justifyContent='left' padding='20px' flexWrap='wrap'>
       {children}
     </Flex>
   );
