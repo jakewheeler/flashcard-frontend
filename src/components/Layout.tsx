@@ -1,7 +1,24 @@
 import React from 'react';
-import { Box, Flex, Image, Link, Heading, HStack } from '@chakra-ui/core';
+import {
+  Box,
+  Flex,
+  Image,
+  Link,
+  Heading,
+  HStack,
+  useDisclosure,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerOverlay,
+  VStack,
+  Divider,
+  IconButton,
+} from '@chakra-ui/core';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import useStore from '../stores/user';
+import { HamburgerIcon } from '@chakra-ui/icons';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -10,16 +27,87 @@ type LayoutProps = {
 export default function Layout({ children }: LayoutProps) {
   return (
     <Box minH='100vh' bg='teal.300'>
-      <Header />
+      <Header>
+        <HomeLink />
+        <LibraryLink />
+      </Header>
       <Flex justifyContent='left'>{children}</Flex>
     </Box>
   );
 }
 
-function Header() {
+function HeaderDrawer() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const btnRef = React.useRef<HTMLButtonElement | null>(null);
+
+  return (
+    <>
+      <IconButton
+        ref={btnRef}
+        aria-label='hamburger'
+        colorScheme='teal'
+        onClick={onOpen}
+        icon={<HamburgerIcon />}
+      >
+        Open
+      </IconButton>
+      <Drawer
+        isOpen={isOpen}
+        placement='right'
+        onClose={onClose}
+        finalFocusRef={btnRef}
+      >
+        <DrawerOverlay>
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerBody bgColor='teal.500'>
+              <VStack align='left'>
+                <HomeLink />
+                <LibraryLink />
+                <LoginLink />
+                <Divider />
+              </VStack>
+            </DrawerBody>
+          </DrawerContent>
+        </DrawerOverlay>
+      </Drawer>
+    </>
+  );
+}
+
+function LibraryLink() {
   const user = useStore((state) => state.user);
   return (
-    <Flex justifyContent='space-between' backgroundColor='teal.500'>
+    <>
+      {user ? (
+        <Link as={RouterLink} to='/library' color='teal.100'>
+          My Library
+        </Link>
+      ) : null}
+    </>
+  );
+}
+
+function HomeLink() {
+  return (
+    <Link as={RouterLink} to='/' color='teal.100'>
+      Home
+    </Link>
+  );
+}
+
+function LoginLink() {
+  const user = useStore((state) => state.user);
+  return user === '' ? <Login /> : <Logout />;
+}
+
+type HeaderProps = {
+  children: React.ReactNode;
+};
+
+function Header({ children }: HeaderProps) {
+  return (
+    <Flex justifyContent='space-between' bg='teal.500'>
       <Flex className='left' marginLeft='15px' align='center'>
         <Link as={RouterLink} to='/' style={{ textDecoration: 'none' }}>
           <Flex className='logo' flexDir='row' alignItems='center'>
@@ -33,19 +121,44 @@ function Header() {
             </Heading>
           </Flex>
         </Link>
-        <HStack marginLeft='100px' spacing='35px' mr={['50px']}>
-          <Link as={RouterLink} to='/' color='teal.100'>
-            Home
-          </Link>
-          {user ? (
-            <Link as={RouterLink} to='/library' color='teal.100'>
-              My Library
-            </Link>
-          ) : null}
+        <HStack
+          marginLeft='100px'
+          spacing='35px'
+          mr={['50px']}
+          display={{
+            base: 'block',
+            xs: 'none',
+            sm: 'none',
+            md: 'block',
+          }}
+        >
+          {children}
         </HStack>
       </Flex>
       <Flex className='right' marginRight='15px' align='center'>
-        {user === '' ? <Login /> : <Logout />}
+        <Box
+          className='responsive-drawer'
+          display={{
+            base: 'block',
+            xs: 'block',
+            md: 'none',
+            lg: 'none',
+            xl: 'none',
+          }}
+        >
+          <HeaderDrawer />
+        </Box>
+        <Box
+          className='responsive-login'
+          display={{
+            base: 'block',
+            xs: 'none',
+            sm: 'none',
+            md: 'block',
+          }}
+        >
+          <LoginLink />
+        </Box>
       </Flex>
     </Flex>
   );

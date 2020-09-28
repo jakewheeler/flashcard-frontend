@@ -15,7 +15,12 @@ export default function Library() {
   return (
     <Flex className='lib-container'>
       {/* left side menu */}
-      <Menu />
+      <Box
+        className='responsive-menu'
+        width={{ xs: '100%', sm: '100%', md: '100%', lg: '500px', xl: '500px' }}
+      >
+        <Menu />
+      </Box>
 
       <Flex flexDir='column'>
         <VStack ml={60} mt={5} align='left' spacing={3}>

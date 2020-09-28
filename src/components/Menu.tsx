@@ -50,8 +50,9 @@ function Menu() {
       <MenuController isOpen={isOpen} toggle={toggleMenu} />
       <Box
         minH='100vh'
-        minW='500px'
-        maxW='500px'
+        minW='inherit'
+        // maxW='500px'
+        // maxW='inherit'
         bgColor='teal.400'
         overflowX='hidden'
         overflowY='auto'
