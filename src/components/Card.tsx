@@ -66,7 +66,9 @@ export default function CardTemplate({ card }: CardProps) {
           minH='inherit'
           mb={50}
         >
-          <Text color='teal.100'>{card.back}</Text>
+          <Text color='teal.100' padding={5}>
+            {card.back}
+          </Text>
 
           <Button colorScheme='white' onClick={handleClick}>
             {isFlipped ? 'See description' : 'See answer'}

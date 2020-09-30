@@ -13,12 +13,7 @@ export default function Library() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
 
   return (
-    <Box
-      className='lib-container'
-      display={{ md: 'flex' }}
-      maxW='100vw'
-      // minW={{ md: '100%' }}
-    >
+    <Box className='lib-container' display={{ md: 'flex' }} maxW='100vw'>
       {/* left side menu */}
       <Box className='menu-container'>
         <Menu />
