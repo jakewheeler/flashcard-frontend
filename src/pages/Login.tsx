@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import {
   Text,
+  Heading,
   FormControl,
   Input,
   Button,
   FormLabel,
-  Box,
+  VStack,
 } from '@chakra-ui/core';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
 import { fetchToken, signUp } from '../api/login-service';
@@ -32,12 +33,14 @@ export default function Login() {
   };
 
   return (
-    <Box maxW='500px' margin='0 auto'>
+    <VStack maxW='500px' margin='0 auto'>
+      <Heading>Login</Heading>
       {showLoginError && (
         <Text color='red.500'>Username and password are incorrect</Text>
       )}
       <UserForm onSubmit={onSubmit} />
-    </Box>
+      <Link to='/signup'>Don't have an account? Sign up for free!</Link>
+    </VStack>
   );
 }
 
@@ -50,9 +53,10 @@ export function SignUp() {
   };
 
   return (
-    <Box maxW='500px' margin='0 auto'>
+    <VStack maxW='500px' margin='0 auto'>
+      <Heading>Sign up</Heading>
       <UserForm onSubmit={onSubmit} />
-    </Box>
+    </VStack>
   );
 }
 
