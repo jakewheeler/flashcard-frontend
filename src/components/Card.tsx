@@ -267,11 +267,11 @@ export function CreateCardCollapsible() {
   const handleToggle = () => setShow(!show);
 
   return (
-    <Box w='700px'>
+    <Box>
       <Button colorScheme='teal' onClick={handleToggle} w={20}>
         New card
       </Button>
-      <Collapse mt={4} isOpen={show} mr={230}>
+      <Collapse mt={4} isOpen={show} mr={10}>
         <AddCardForm onCancel={handleToggle} />
       </Collapse>
     </Box>

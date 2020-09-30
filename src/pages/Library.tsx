@@ -13,17 +13,19 @@ export default function Library() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
 
   return (
-    <Flex className='lib-container'>
+    <Box
+      className='lib-container'
+      display={{ md: 'flex' }}
+      maxW='100vw'
+      // minW={{ md: '100%' }}
+    >
       {/* left side menu */}
-      <Box
-        className='responsive-menu'
-        width={{ xs: '100%', sm: '100%', md: '100%', lg: '500px', xl: '500px' }}
-      >
+      <Box className='menu-container'>
         <Menu />
       </Box>
 
       <Flex flexDir='column'>
-        <VStack ml={60} mt={5} align='left' spacing={3}>
+        <VStack ml={{ base: 4, sm: 60 }} mt={5} align='left' spacing={3}>
           <Heading color='teal.900'>
             {selectedDeck ? selectedDeck.name : 'Select a deck'}
           </Heading>
@@ -34,7 +36,7 @@ export default function Library() {
           {selectedDeck && <CardView deck={selectedDeck} />}
         </ResponsiveCardLayout>
       </Flex>
-    </Flex>
+    </Box>
   );
 }
 
@@ -55,7 +57,7 @@ function CardView({ deck }: CardPanelProps) {
 
   if (!data?.length) {
     return (
-      <Heading color='teal.700' m={50}>
+      <Heading color='teal.700' m={{ base: 0, sm: 50 }}>
         No cards yet
       </Heading>
     );
@@ -64,7 +66,7 @@ function CardView({ deck }: CardPanelProps) {
   return (
     <>
       {data?.map((card) => (
-        <Box key={card.id} m={50}>
+        <Box key={card.id} m={{ base: 0, sm: 50 }} mb={{ base: 50, sm: 0 }}>
           <CardTemplate card={card} />
         </Box>
       ))}

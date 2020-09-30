@@ -29,9 +29,10 @@ function MenuController({ isOpen, toggle }: MenuControllerProps) {
       colorScheme='teal'
       icon={isOpen ? <ArrowLeftIcon /> : <ArrowRightIcon />}
       mt={2}
+      mb={2}
       ml={2}
       onClick={toggle}
-      position='absolute'
+      position='sticky'
     />
   );
 }
@@ -50,13 +51,11 @@ function Menu() {
       <MenuController isOpen={isOpen} toggle={toggleMenu} />
       <Box
         minH='100vh'
-        minW='inherit'
-        // maxW='500px'
-        // maxW='inherit'
         bgColor='teal.400'
         overflowX='hidden'
         overflowY='auto'
         display={isOpen ? 'block' : 'none'}
+        minW={{ base: '100vw', md: 500 }}
       >
         <Heading align='center' mt='35px' color='teal.100' mb='10px'>
           Library
