@@ -30,6 +30,7 @@ import {
   editCategory,
 } from '../api/card-service';
 import { Category } from '../types/category';
+import { useErrorToast, useSuccessToast } from '../hooks';
 
 type CollapsibleCategoryProps = {
   category: Category;
@@ -193,7 +194,9 @@ export function AddCategoryModal() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const token = useStore((state) => state.token);
   const { register, handleSubmit } = useForm<CategoryInput>();
-  const toast = useToast();
+
+  const successToast = useSuccessToast();
+  const errorToast = useErrorToast();
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -208,22 +211,12 @@ export function AddCategoryModal() {
     try {
       await addCategory({ name });
       onClose();
-      toast({
-        description: `Added category '${category.name}'`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-        position: 'top-right',
-      });
+      successToast(`Added category '${category.name}'`);
     } catch (err) {
       onClose();
-      toast({
-        description: `Could not add category '${category.name}' because a category with this name already exists`,
-        status: 'error',
-        duration: 9000,
-        isClosable: true,
-        position: 'top-right',
-      });
+      errorToast(
+        `Could not add category '${category.name}' because a category with this name already exists`
+      );
     }
   };
 

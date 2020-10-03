@@ -11,7 +11,7 @@ import { Deck } from '../types/deck';
 import { useEffect } from 'react';
 import { tryFetchLoggedInUser } from '../api/login-service';
 import useSelectedDeck from '../stores/deck';
-import { useRadioGroup } from '@chakra-ui/core';
+import { useRadioGroup, useToast } from '@chakra-ui/core';
 
 export function useAllUserDecks() {
   const token = useStore((state) => state.token);
@@ -72,4 +72,28 @@ export function useDeckRadioGroup() {
 
   const group = getRootProps();
   return { group, getRadioProps };
+}
+
+export function useSuccessToast(duration: number = 3000) {
+  const toast = useToast();
+  return (description: string) =>
+    toast({
+      description,
+      status: 'success',
+      duration,
+      isClosable: true,
+      position: 'top-right',
+    });
+}
+
+export function useErrorToast(duration: number = 9000) {
+  const toast = useToast();
+  return (description: string) =>
+    toast({
+      description,
+      status: 'error',
+      duration: duration,
+      isClosable: true,
+      position: 'top-right',
+    });
 }
