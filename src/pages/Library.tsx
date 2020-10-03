@@ -30,7 +30,6 @@ export default function Library() {
       </Box>
 
       <Flex
-        className='mobile-flexer'
         flexDir='column'
         display={{ base: isOpen ? 'none' : 'block', md: 'block' }}
       >
@@ -75,7 +74,7 @@ function CardView({ deck }: CardPanelProps) {
   return (
     <>
       {data?.map((card) => (
-        <Box key={card.id} m={{ base: 0, sm: 50 }} mb={{ base: 50, sm: 0 }}>
+        <Box key={card.id} m={2}>
           <CardTemplate card={card} />
         </Box>
       ))}
