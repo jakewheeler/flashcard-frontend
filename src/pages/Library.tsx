@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, VStack, Spinner, Heading } from '@chakra-ui/core';
 import { useCards } from '../hooks';
 import { Deck } from '../types/deck';
@@ -7,19 +7,33 @@ import CardTemplate, {
   ResponsiveCardLayout,
   CreateCardCollapsible,
 } from '../components/Card';
-import Menu from '../components/Menu';
+import Menu, { MenuController } from '../components/Menu';
 
 export default function Library() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
+  const [isOpen, setIsOpen] = useState(true);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
     <Box className='lib-container' display={{ md: 'flex' }} maxW='100vw'>
       {/* left side menu */}
       <Box className='menu-container'>
-        <Menu />
+        <Menu
+          isOpen={isOpen}
+          menuController={
+            <MenuController isOpen={isOpen} toggle={toggleMenu} />
+          }
+        />
       </Box>
 
-      <Flex flexDir='column'>
+      <Flex
+        className='mobile-flexer'
+        flexDir='column'
+        display={{ base: isOpen ? 'none' : 'block', md: 'block' }}
+      >
         <VStack ml={{ base: 4, sm: 60 }} mt={5} align='left' spacing={3}>
           <Heading color='teal.900'>
             {selectedDeck ? selectedDeck.name : 'Select a deck'}

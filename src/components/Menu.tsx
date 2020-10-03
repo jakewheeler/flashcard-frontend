@@ -22,7 +22,8 @@ type MenuControllerProps = {
   isOpen: boolean;
   toggle: () => void;
 };
-function MenuController({ isOpen, toggle }: MenuControllerProps) {
+
+export function MenuController({ isOpen, toggle }: MenuControllerProps) {
   return (
     <IconButton
       aria-label={isOpen ? 'Close the menu' : 'Open the menu'}
@@ -37,18 +38,18 @@ function MenuController({ isOpen, toggle }: MenuControllerProps) {
   );
 }
 
-function Menu() {
-  const [isOpen, setIsOpen] = useState(true);
+type MenuProps = {
+  menuController: React.ReactNode;
+  isOpen: boolean;
+};
+
+function Menu({ menuController, isOpen }: MenuProps) {
   const [viewByValue, setViewByValue] = useState<React.ReactText>('category');
   const { group, getRadioProps } = useDeckRadioGroup();
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
   return (
     <>
-      <MenuController isOpen={isOpen} toggle={toggleMenu} />
+      {menuController}
       <Box
         minH='100vh'
         bgColor='teal.400'
