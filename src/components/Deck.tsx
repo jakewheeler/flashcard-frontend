@@ -16,10 +16,9 @@ import {
   FormControl,
   FormLabel,
   ModalFooter,
-  useToast,
   HStack,
 } from '@chakra-ui/core';
-import { useCategory } from '../hooks';
+import { useCategory, useErrorToast, useSuccessToast } from '../hooks';
 import useStore from '../stores/user';
 import { useMutation, queryCache } from 'react-query';
 import { createDeck } from '../api/card-service';
@@ -76,7 +75,9 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
   const { data: category } = useCategory(categoryId);
   const token = useStore((state) => state.token);
   const { register, handleSubmit } = useForm<AddDeckInputObj>();
-  const toast = useToast();
+
+  const successToast = useSuccessToast();
+  const errorToast = useErrorToast();
 
   const initialRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -95,23 +96,12 @@ export function AddDeckModal({ categoryId }: AddDeckModalProps) {
     try {
       await addDeck({ categoryId, name });
       onClose();
-      toast({
-        description: `Added deck '${deck.name}' to category '${category?.name}'`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-        position: 'top-right',
-      });
+      successToast(`Added deck '${deck.name}' to category '${category?.name}'`);
     } catch (err) {
       onClose();
-      toast({
-        title: 'Unable to add deck',
-        description: `Could not add deck '${deck.name}' because a deck with this name already exists`,
-        status: 'error',
-        duration: 9000,
-        isClosable: true,
-        position: 'top-right',
-      });
+      errorToast(
+        `Could not add deck '${deck.name}' because a deck with this name already exists`
+      );
     }
   };
 

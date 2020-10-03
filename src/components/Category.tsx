@@ -6,7 +6,6 @@ import {
   Text,
   IconButton,
   useDisclosure,
-  useToast,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -45,7 +44,9 @@ export function CollapsibleCategory({
   const token = useStore((state) => state.token);
   const [show, setShow] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const toast = useToast();
+
+  const successToast = useSuccessToast();
+  const errorToast = useErrorToast();
 
   const handleToggle = () => setShow(!show);
 
@@ -64,21 +65,9 @@ export function CollapsibleCategory({
   const deletion = async () => {
     try {
       await deleteCategoryMut({ category });
-      toast({
-        description: `${category.name} has been deleted!`,
-        duration: 2000,
-        isClosable: true,
-        status: 'success',
-        position: 'top-right',
-      });
+      successToast(`${category.name} has been deleted!`);
     } catch (err) {
-      toast({
-        description: `Could not delete category`,
-        duration: 9000,
-        isClosable: true,
-        status: 'error',
-        position: 'top-right',
-      });
+      errorToast(`Could not delete category`);
     }
   };
 
@@ -90,22 +79,12 @@ export function CollapsibleCategory({
       });
       setIsEditing(false);
       if (editedCategory) {
-        toast({
-          description: `${category.name} has been renamed to ${editedCategory.name}`,
-          duration: 2000,
-          isClosable: true,
-          status: 'success',
-          position: 'top-right',
-        });
+        successToast(
+          `${category.name} has been renamed to ${editedCategory.name}`
+        );
       }
     } catch (err) {
-      toast({
-        description: `Could not edit deck`,
-        duration: 9000,
-        isClosable: true,
-        status: 'error',
-        position: 'top-right',
-      });
+      errorToast(`Could not edit deck`);
     }
   };
 

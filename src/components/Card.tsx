@@ -18,7 +18,6 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  useToast,
 } from '@chakra-ui/core';
 import { DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import ReactCardFlip from 'react-card-flip';
@@ -28,6 +27,7 @@ import useStore from '../stores/user';
 import { useForm } from 'react-hook-form';
 import { useMutation, queryCache } from 'react-query';
 import { createCard, deleteCard, editCard } from '../api/card-service';
+import { useErrorToast, useSuccessToast } from '../hooks';
 
 type CardProps = {
   card: Card;
@@ -87,7 +87,9 @@ type CardStructureProps = {
 export function CardStructure({ children, card }: CardStructureProps) {
   const deck = useSelectedDeck((state) => state.currentDeck);
   const token = useStore((state) => state.token);
-  const toast = useToast();
+
+  const successToast = useSuccessToast();
+  const errorToast = useErrorToast();
 
   const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
 
@@ -117,21 +119,9 @@ export function CardStructure({ children, card }: CardStructureProps) {
             onClick={async () => {
               try {
                 await deleteMutation({ deck, card });
-                toast({
-                  description: `Card deleted successfully`,
-                  status: 'success',
-                  duration: 2000,
-                  isClosable: true,
-                  position: 'top-right',
-                });
+                successToast(`Card deleted successfully`);
               } catch (err) {
-                toast({
-                  description: `Card could not be deleted`,
-                  status: 'error',
-                  duration: 9000,
-                  isClosable: true,
-                  position: 'top-right',
-                });
+                errorToast(`Card could not be deleted`);
               }
             }}
           />
@@ -228,7 +218,10 @@ type ModifyCardFormProps = {
 function AddCardForm({ onCancel }: ModifyCardFormProps) {
   const token = useStore((state) => state.token);
   const deck = useSelectedDeck((state) => state.currentDeck);
-  const toast = useToast();
+
+  const successToast = useSuccessToast();
+  const errorToast = useErrorToast();
+
   const cacheKey = ['cards', token, deck?.categoryId, deck?.id];
   const [mutate] = useMutation(
     (formData: CreateCardType) => {
@@ -242,21 +235,9 @@ function AddCardForm({ onCancel }: ModifyCardFormProps) {
       await mutate(card);
       e.target.reset();
       onCancel();
-      toast({
-        description: `Card added to deck '${deck?.name}'`,
-        status: 'success',
-        duration: 2000,
-        isClosable: true,
-        position: 'top-right',
-      });
+      successToast(`Card added to deck '${deck?.name}'`);
     } catch (err) {
-      toast({
-        description: `Could not add card to deck '${deck?.name}'`,
-        status: 'error',
-        duration: 9000,
-        isClosable: true,
-        position: 'top-right',
-      });
+      errorToast(`Could not add card to deck '${deck?.name}'`);
     }
   };
 
