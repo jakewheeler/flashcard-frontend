@@ -11,6 +11,7 @@ import Menu, { MenuController } from '../components/Menu';
 
 export default function Library() {
   const selectedDeck = useSelectedDeck((state) => state.currentDeck);
+
   const [isOpen, setIsOpen] = useState(true);
 
   const toggleMenu = () => {

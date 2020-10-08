@@ -173,12 +173,14 @@ function Login() {
 }
 function Logout() {
   const setUser = useStore((state) => state.setUser);
-  const { push } = useHistory();
+  const history = useHistory();
+
   const deleteToken = () => {
     setUser('', '');
     window.localStorage.setItem('token', '');
-    push('/');
+    history.push('/');
   };
+
   return (
     <Link to='/' onClick={deleteToken} color='teal.100'>
       Logout
