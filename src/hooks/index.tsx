@@ -8,7 +8,7 @@ import {
 } from '../api/card-service';
 import useStore from '../stores/user';
 import { Deck } from '../types/deck';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { tryFetchLoggedInUser } from '../api/login-service';
 import useSelectedDeck from '../stores/deck';
 import { useRadioGroup, useToast } from '@chakra-ui/core';
@@ -41,9 +41,11 @@ export function useCards(deck: Deck) {
 }
 
 // check if a stored user already exists and use that for the login
-export function useStoredUser() {
+export function useStoredUser(): boolean {
   const { setUser, token, user } = useStore();
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
+    setIsLoading(true);
     const token = window.localStorage.getItem('token');
     async function authCheck() {
       if (token) {
@@ -55,9 +57,12 @@ export function useStoredUser() {
           window.localStorage.setItem('token', '');
         }
       }
+      setIsLoading(false);
     }
     authCheck();
   }, [token, user, setUser]);
+
+  return isLoading;
 }
 
 export function useDeckRadioGroup() {

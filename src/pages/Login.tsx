@@ -8,7 +8,7 @@ import {
   FormLabel,
   VStack,
 } from '@chakra-ui/core';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
 import { fetchToken } from '../api/login-service';
@@ -16,9 +16,13 @@ import useStore from '../stores/user';
 import { getDecodedJwt } from '../utils';
 
 export default function Login() {
-  const setUser = useStore((state) => state.setUser);
+  const { user, setUser } = useStore();
   const [showLoginError, setShowLoginError] = useState<boolean>(false);
   const history = useHistory();
+
+  if (user) {
+    return <Redirect to='/library' />;
+  }
 
   const onSubmit = async (user: UserData) => {
     try {

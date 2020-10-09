@@ -2,22 +2,18 @@ import React from 'react';
 import Library from './pages/Library';
 import { ChakraProvider, CSSReset } from '@chakra-ui/core';
 import Layout from './components/Layout';
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Redirect,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import theme from '@chakra-ui/theme';
 import Home from './pages/Home';
 import { useStoredUser } from './hooks';
-import useStore from './stores/user';
+import { PrivateRoute } from './components/PrivateRoute';
 
 function App() {
-  useStoredUser();
-  let user = useStore((state) => state.user);
+  const isLoading = useStoredUser();
+
+  if (isLoading) return null;
 
   return (
     <>
@@ -27,15 +23,9 @@ function App() {
           <Layout>
             <Switch>
               <Route exact path='/' component={Home} />
-              <Route exact path='/login'>
-                {user ? <Redirect to='/library' /> : <Login />}
-              </Route>
-              <Route exact path='/signup'>
-                {user ? <Redirect to='/library' /> : <SignUp />}
-              </Route>
-              <Route exact path='/library'>
-                {!user ? <Redirect to='/login' /> : <Library />}
-              </Route>
+              <PrivateRoute exact path='/library' component={Library} />
+              <Route exact path='/login' component={Login} />
+              <Route exact path='/signup' component={SignUp} />
             </Switch>
           </Layout>
         </Router>
