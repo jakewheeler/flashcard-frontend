@@ -43,7 +43,7 @@ export default function Login() {
         <Text color='red.500'>Username and password are incorrect</Text>
       )}
       <UserForm onSubmit={onSubmit} />
-      <Link to='/signup'>Don't have an account? Sign up for free!</Link>
+      <Link to='/signup'>Don't have an account? Sign up</Link>
     </VStack>
   );
 }
