@@ -1,9 +1,19 @@
 import client from '../api/client';
 import { UserData } from '../types/user';
+import { getDecodedJwt } from '../utils';
 
 type Token = {
   accessToken: string;
 };
+
+export async function login(user: UserData) {
+  let token = null;
+  let username = null;
+  token = await fetchToken(user);
+  username = getDecodedJwt(token).username;
+
+  return { username, token };
+}
 
 export async function fetchToken(user: UserData): Promise<string> {
   const data = (await client().post<Token>('/auth/signin', user)).data

@@ -11,13 +11,12 @@ import {
 import { Link, Redirect, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { UserData } from '../types/user';
-import { fetchToken } from '../api/login-service';
+import { login } from '../api/login-service';
 import useStore from '../stores/user';
-import { getDecodedJwt } from '../utils';
 
 export default function Login() {
   const { user, setUser } = useStore();
-  const [showLoginError, setShowLoginError] = useState<boolean>(false);
+  const [showLoginError, setShowLoginError] = useState(false);
   const history = useHistory();
 
   if (user) {
@@ -26,8 +25,7 @@ export default function Login() {
 
   const onSubmit = async (user: UserData) => {
     try {
-      let token = await fetchToken(user);
-      let username = getDecodedJwt(token).username;
+      const { username, token } = await login(user);
       setUser(username, token);
       window.localStorage.setItem('token', token);
       history.push('/library');
