@@ -19,6 +19,8 @@ import {
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import useStore from '../stores/user';
 import { HamburgerIcon } from '@chakra-ui/icons';
+import { queryCache } from 'react-query';
+import useSelectedDeck from '../stores/deck';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -173,10 +175,13 @@ function Login() {
 }
 function Logout() {
   const setUser = useStore((state) => state.setUser);
+  const setDeck = useSelectedDeck((state) => state.setDeck);
   const history = useHistory();
 
   const deleteToken = () => {
     setUser('', '');
+    setDeck(null);
+    queryCache.clear();
     window.localStorage.setItem('token', '');
     history.push('/');
   };
