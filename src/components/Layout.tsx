@@ -64,9 +64,9 @@ function HeaderDrawer() {
             <DrawerCloseButton />
             <DrawerBody bgColor='teal.500'>
               <VStack align='left'>
-                <HomeLink />
-                <LibraryLink />
-                <LoginLink />
+                <HomeLink onClick={onClose} />
+                <LibraryLink onClick={onClose} />
+                <LoginLink onClick={onClose} />
                 <Divider />
               </VStack>
             </DrawerBody>
@@ -77,12 +77,16 @@ function HeaderDrawer() {
   );
 }
 
-function LibraryLink() {
+type HeaderDrawerLinkProps = {
+  onClick?: () => void;
+};
+
+function LibraryLink({ onClick }: HeaderDrawerLinkProps) {
   const user = useStore((state) => state.user);
   return (
     <>
       {user ? (
-        <Link as={RouterLink} to='/library' color='teal.100'>
+        <Link as={RouterLink} to='/library' color='teal.100' onClick={onClick}>
           My Library
         </Link>
       ) : null}
@@ -90,15 +94,15 @@ function LibraryLink() {
   );
 }
 
-function HomeLink() {
+function HomeLink({ onClick }: HeaderDrawerLinkProps) {
   return (
-    <Link as={RouterLink} to='/' color='teal.100'>
+    <Link as={RouterLink} to='/' color='teal.100' onClick={onClick}>
       Home
     </Link>
   );
 }
 
-function LoginLink() {
+function LoginLink({ onClick }: HeaderDrawerLinkProps) {
   const user = useStore((state) => state.user);
   return user === '' ? <Login /> : <Logout />;
 }
